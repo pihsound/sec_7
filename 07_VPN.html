@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPN 가상 사설망 완전 학습자료</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060810;--bg2:#0b0f1c;--bg3:#111622;--bg4:#1a2035;
+  --border:#1d2a40;--border2:#273550;
+  --text:#e2eaf8;--text2:#607090;--text3:#a2b4d0;
+  --vpn:#6366f1;    /* VPN — 인디고 */
+  --vpn2:#818cf8;   --vpn3:#c7d2fe;
+  --tun:#06b6d4;    /* 터널 — 시안 */
+  --enc:#a855f7;    /* 암호화 — 퍼플 */
+  --auth:#22c55e;   /* 인증 — 그린 */
+  --allow:#22c55e;  --deny:#ef4444; --deny2:#f87171;
+  --gold:#f0a500;   --orange:#f97316;
+  --blue:#3b82f6;   --green:#22c55e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:1.85;}
+
+/* ── HERO ── */
+.hero{
+  padding:70px 28px 58px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#04060f 0%,#080d1e 50%,#04060f 100%);
+  border-bottom:2px solid rgba(99,102,241,.35);
+}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 80% at 50% 40%,rgba(99,102,241,.1),transparent 60%);}
+.hero::after{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(99,102,241,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,102,241,.03) 1px,transparent 1px);
+  background-size:42px 42px;}
+.hero-inner{position:relative;z-index:1;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;position:relative;
+  background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.38);
+  color:var(--vpn2);font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:4px;padding:5px 20px;border-radius:20px;margin-bottom:22px;}
+.hero h1{font-size:46px;font-weight:900;color:#fff;margin-bottom:14px;line-height:1.18;}
+.hero h1 em{color:var(--vpn2);font-style:normal;}
+.hero-sub{color:var(--text2);font-size:14.5px;max-width:640px;margin:0 auto 28px;line-height:1.8;}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.hs{text-align:center;}
+.hs-num{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;
+  color:var(--vpn2);line-height:1;}
+.hs-lbl{font-size:11px;color:var(--text2);margin-top:3px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.hpill{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:700;
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text3);}
+
+/* ── NAV ── */
+.snav{position:sticky;top:0;z-index:200;background:rgba(6,8,16,.97);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+  padding:0 16px;overflow-x:auto;white-space:nowrap;}
+.snav::-webkit-scrollbar{height:3px;}
+.snav::-webkit-scrollbar-thumb{background:rgba(99,102,241,.4);}
+.snav-inner{display:inline-flex;}
+.snav a{display:inline-block;padding:12px 14px;font-size:12px;font-weight:700;
+  color:var(--text2);text-decoration:none;border-bottom:2px solid transparent;transition:all .2s;}
+.snav a:hover{color:var(--vpn2);border-bottom-color:var(--vpn2);}
+
+/* ── WRAP ── */
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+
+/* ── SECTION ── */
+.sec{padding:52px 0 10px;}
+.sec-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:28px;
+  padding-bottom:20px;border-bottom:1px solid var(--border2);}
+.sec-icon{width:52px;height:52px;min-width:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid;}
+.sec-meta .sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:3px;opacity:.5;margin-bottom:5px;}
+.sec-meta h2{font-size:24px;font-weight:900;color:#fff;margin-bottom:6px;}
+.sec-meta .sec-desc{font-size:13px;color:var(--text2);}
+.sub{font-size:15px;font-weight:700;color:var(--text);margin:24px 0 11px;
+  padding-left:12px;border-left:3px solid var(--vpn);}
+p{color:var(--text3);margin-bottom:11px;line-height:1.9;}
+strong{color:var(--gold);font-weight:700;}
+em{color:var(--vpn2);font-style:normal;}
+ul{padding-left:22px;margin-bottom:11px;color:var(--text3);}
+li{margin-bottom:6px;line-height:1.8;}
+li::marker{color:var(--vpn);}
+code{font-family:'JetBrains Mono',monospace;background:var(--bg3);
+  padding:2px 6px;border-radius:3px;font-size:12.5px;color:var(--vpn2);}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;margin:13px 0;border-radius:8px;border:1px solid var(--border2);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead th{background:var(--bg3);color:var(--gold);font-weight:700;
+  padding:10px 14px;text-align:left;border-bottom:2px solid var(--border2);}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,.015);}
+tbody td{padding:9px 14px;color:var(--text3);vertical-align:top;}
+.tk{font-weight:700;color:var(--text);white-space:nowrap;}
+.tv{color:var(--vpn2);font-weight:700;}
+.tg{color:var(--green);font-weight:700;}
+.tr{color:var(--deny2);font-weight:700;}
+.ty{color:var(--gold);font-weight:700;}
+.tc{color:var(--tun);font-weight:700;}
+.tp{color:var(--enc);font-weight:700;}
+
+/* ── BOXES ── */
+.box{border-radius:8px;padding:16px 20px;margin:13px 0;font-size:14px;}
+.bt{font-weight:700;font-size:13px;margin-bottom:7px;}
+.bx-v{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.25);}
+.bx-v .bt{color:var(--vpn2);}
+.bx-g{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);}
+.bx-g .bt{color:var(--green);}
+.bx-r{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);}
+.bx-r .bt{color:var(--deny2);}
+.bx-y{background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.25);}
+.bx-y .bt{color:var(--gold);}
+.bx-c{background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.25);}
+.bx-c .bt{color:var(--tun);}
+.bx-p{background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.25);}
+.bx-p .bt{color:var(--enc);}
+
+/* ── CODE ── */
+.cb{background:var(--bg);border:1px solid var(--border2);border-left:3px solid var(--vpn);
+  border-radius:6px;padding:16px 20px;margin:12px 0;font-family:'JetBrains Mono',monospace;
+  font-size:13px;color:var(--text3);white-space:pre-wrap;line-height:1.72;overflow-x:auto;}
+.cb-lbl{display:block;font-size:10px;color:var(--vpn2);letter-spacing:2px;
+  margin-bottom:10px;font-family:'Noto Sans KR',sans-serif;font-weight:700;}
+.cm{color:var(--text2);}.ce{color:var(--deny2);}.cs{color:var(--green);}
+.ck{color:var(--enc);}.cy{color:var(--gold);}.cc{color:var(--tun);}
+.cv{color:var(--vpn2);}
+
+/* ════════════════════════════
+   VISUAL DIAGRAMS
+════════════════════════════ */
+
+/* 1. VPN 터널 개념도 */
+.tunnel-diagram{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:14px;padding:30px 28px;margin:18px 0;overflow-x:auto;
+}
+.td-title{font-size:11px;font-weight:700;color:var(--text2);
+  letter-spacing:2px;margin-bottom:22px;font-family:'JetBrains Mono',monospace;}
+
+/* 공개 인터넷 영역 */
+.internet-zone{
+  background:rgba(239,68,68,.05);border:1px dashed rgba(239,68,68,.3);
+  border-radius:10px;padding:16px;margin:8px 0;
+  position:relative;
+}
+.zone-label{
+  position:absolute;top:-10px;left:14px;
+  background:var(--bg2);padding:0 8px;
+  font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;
+}
+/* 터널 파이프 */
+.tunnel-pipe{
+  display:flex;align-items:center;gap:0;margin:12px 0;
+  position:relative;
+}
+.tp-cap-l,.tp-cap-r{
+  width:16px;height:40px;border-radius:0;flex-shrink:0;
+}
+.tp-cap-l{
+  background:linear-gradient(90deg,rgba(99,102,241,.6),rgba(99,102,241,.3));
+  border-radius:8px 0 0 8px;border:1px solid rgba(99,102,241,.5);border-right:none;
+}
+.tp-cap-r{
+  background:linear-gradient(270deg,rgba(99,102,241,.6),rgba(99,102,241,.3));
+  border-radius:0 8px 8px 0;border:1px solid rgba(99,102,241,.5);border-left:none;
+}
+.tp-body{
+  flex:1;height:40px;
+  background:linear-gradient(180deg,
+    rgba(99,102,241,.15) 0%,
+    rgba(99,102,241,.25) 35%,
+    rgba(99,102,241,.25) 65%,
+    rgba(99,102,241,.15) 100%);
+  border-top:1px solid rgba(99,102,241,.4);
+  border-bottom:1px solid rgba(99,102,241,.4);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.tp-body::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    90deg,
+    transparent 0,transparent 8px,
+    rgba(99,102,241,.08) 8px,rgba(99,102,241,.08) 16px
+  );
+}
+.tp-label{
+  position:relative;z-index:1;
+  font-size:11px;font-weight:700;color:var(--vpn2);
+  font-family:'JetBrains Mono',monospace;letter-spacing:1px;
+  background:rgba(6,8,16,.7);padding:2px 10px;border-radius:4px;
+}
+/* 패킷 비교 */
+.pkt-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+.pkt-card{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;}
+.pkt-title{font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px;font-family:'JetBrains Mono',monospace;}
+.pkt-layers{display:flex;flex-direction:column;gap:3px;}
+.pkt-layer{
+  border-radius:4px;padding:6px 12px;font-size:11px;font-weight:700;
+  text-align:center;font-family:'JetBrains Mono',monospace;border:1px solid;
+}
+
+/* 2. VPN 유형 다이어그램 */
+.vpn-type-diagram{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:12px;padding:24px;margin:16px 0;overflow-x:auto;
+}
+.vtd-title{font-size:11px;font-weight:700;color:var(--text2);
+  letter-spacing:2px;margin-bottom:18px;font-family:'JetBrains Mono',monospace;}
+.net-row{display:flex;align-items:center;justify-content:center;gap:8px;
+  flex-wrap:nowrap;min-width:480px;}
+.n-box{border-radius:7px;padding:10px 13px;text-align:center;
+  border:1px solid;font-size:11px;font-weight:700;min-width:80px;}
+.n-internet{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:var(--deny2);}
+.n-vpn-gw{
+  background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(99,102,241,.08));
+  border:2px solid rgba(99,102,241,.5);color:var(--vpn2);
+  box-shadow:0 0 14px rgba(99,102,241,.2);
+}
+.n-corp{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.25);color:var(--green);}
+.n-client{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3);color:var(--gold);}
+.n-cloud{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--vpn2);}
+.n-arrow{font-size:18px;color:var(--text2);flex-shrink:0;}
+.tunnel-arrow{
+  flex:1;height:24px;position:relative;display:flex;align-items:center;
+  min-width:50px;
+}
+.ta-inner{
+  width:100%;height:22px;
+  background:linear-gradient(180deg,rgba(99,102,241,.12),rgba(99,102,241,.2),rgba(99,102,241,.12));
+  border:1px solid rgba(99,102,241,.35);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--vpn2);font-family:'JetBrains Mono',monospace;font-weight:700;
+  position:relative;overflow:hidden;
+}
+.ta-inner::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 6px,
+    rgba(99,102,241,.07) 6px,rgba(99,102,241,.07) 12px);
+}
+.ta-text{position:relative;z-index:1;}
+
+/* 3. 프로토콜 스택 */
+.proto-stack{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0;
+}
+.ps-card{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:10px;overflow:hidden;
+  border-top:3px solid;transition:transform .2s;
+}
+.ps-card:hover{transform:translateY(-2px);}
+.ps-head{padding:14px 16px;border-bottom:1px solid var(--border2);}
+.ps-name{font-size:16px;font-weight:900;color:#fff;margin-bottom:2px;}
+.ps-full{font-size:11px;color:var(--text2);}
+.ps-body{padding:14px 16px;}
+.ps-layer{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.psl-item{
+  border-radius:4px;padding:5px 10px;font-size:11px;font-weight:700;
+  text-align:center;font-family:'JetBrains Mono',monospace;
+}
+.ps-meta{display:flex;flex-direction:column;gap:5px;}
+.ps-row{display:flex;justify-content:space-between;font-size:12px;
+  padding:3px 0;border-bottom:1px solid var(--border);}
+.ps-row:last-child{border-bottom:none;}
+.ps-key{color:var(--text2);}
+
+/* 4. IPSec 상세 */
+.ipsec-modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+.im-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;}
+.im-head{padding:14px 18px;border-bottom:1px solid var(--border2);}
+.im-body{padding:14px 18px;}
+/* IPSec 패킷 구조 시각화 */
+.ipsec-pkt{display:flex;flex-direction:column;gap:3px;margin:10px 0;}
+.ip-field{
+  border-radius:4px;padding:6px 12px;
+  font-size:11px;font-weight:700;text-align:center;
+  font-family:'JetBrains Mono',monospace;border:1px solid;
+}
+.ipf-orig-ip{background:rgba(99,102,241,.12);border-color:rgba(99,102,241,.3);color:var(--vpn2);}
+.ipf-new-ip{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--gold);}
+.ipf-ah{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--green);}
+.ipf-esp{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.3);color:var(--enc);}
+.ipf-data{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--tun);}
+.ipf-enc{background:rgba(168,85,247,.06);border:2px dashed rgba(168,85,247,.4);color:var(--enc);padding:12px;}
+.enc-label{font-size:9px;color:var(--enc);margin-bottom:5px;letter-spacing:1px;}
+
+/* 5. SSL VPN vs IPSec VPN */
+.ssl-ipsec{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;}
+.si-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;}
+.si-head{padding:16px 18px;border-bottom:1px solid var(--border2);}
+.si-body{padding:16px 18px;}
+.si-row{display:flex;justify-content:space-between;align-items:flex-start;
+  padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;gap:8px;}
+.si-row:last-child{border-bottom:none;}
+.si-key{color:var(--text2);font-size:12.5px;flex-shrink:0;}
+.si-val{font-weight:700;font-size:12.5px;text-align:right;}
+
+/* 6. 터널링 모드 비교 (Transport vs Tunnel) */
+.mode-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+
+/* 7. VPN 구성 시나리오 */
+.scenario-cards{display:flex;flex-direction:column;gap:14px;margin:14px 0;}
+.sc-card{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:10px;padding:18px;border-left:4px solid;
+}
+.sc-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.sc-icon{font-size:22px;}
+.sc-title{font-size:15px;font-weight:800;color:#fff;}
+.sc-en{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.sc-desc{font-size:13.5px;color:var(--text3);line-height:1.75;}
+
+/* QUIZ */
+.quiz-wrap{
+  background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(99,102,241,.02));
+  border:2px solid rgba(99,102,241,.3);border-radius:12px;
+  padding:24px 26px;margin:32px 0;
+}
+.quiz-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.quiz-badge{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);
+  color:var(--vpn2);font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:4px;font-weight:700;}
+.quiz-title{font-size:15px;font-weight:900;color:var(--vpn2);}
+.q-item{background:var(--bg2);border:1px solid var(--border2);
+  border-radius:8px;padding:17px 20px;margin-bottom:10px;}
+.q-item:last-child{margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--vpn2);font-weight:700;margin-bottom:7px;}
+.q-text{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1.65;}
+.q-options{display:flex;flex-direction:column;gap:6px;margin-bottom:11px;}
+.q-opt{padding:9px 13px;border-radius:6px;border:1px solid var(--border2);
+  font-size:13.5px;color:var(--text3);cursor:pointer;transition:all .2s;
+  display:flex;align-items:flex-start;gap:9px;}
+.q-opt:hover:not(.disabled){border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.05);}
+.q-opt.correct{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.5);color:var(--green);}
+.q-opt.wrong{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.4);color:var(--deny2);}
+.q-opt.disabled{cursor:default;pointer-events:none;}
+.opt-letter{width:22px;height:22px;min-width:22px;border-radius:50%;background:var(--bg3);
+  border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;margin-top:1px;flex-shrink:0;}
+.q-explain{display:none;background:var(--bg3);border-left:3px solid var(--green);
+  border-radius:0 6px 6px 0;padding:11px 15px;font-size:13px;color:var(--text3);
+  line-height:1.7;margin-top:2px;}
+.q-explain.show{display:block;}
+.ex-title{color:var(--green);font-weight:700;margin-bottom:5px;font-size:12px;}
+.q-btn{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);
+  color:var(--vpn2);border-radius:6px;padding:6px 14px;font-size:12.5px;font-weight:700;
+  cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;margin-top:3px;}
+.q-btn:hover{background:rgba(99,102,241,.2);}
+.q-btn:disabled{opacity:.4;cursor:default;}
+
+/* MISC */
+.div{border:none;border-top:1px solid var(--border2);margin:50px 0 0;}
+.hy{background:rgba(240,165,0,.15);padding:1px 5px;border-radius:3px;color:var(--gold);}
+.hr{background:rgba(239,68,68,.15);padding:1px 5px;border-radius:3px;color:var(--deny2);}
+.hg{background:rgba(34,197,94,.15);padding:1px 5px;border-radius:3px;color:var(--green);}
+.hv{background:rgba(99,102,241,.15);padding:1px 5px;border-radius:3px;color:var(--vpn2);}
+.hc{background:rgba(6,182,212,.15);padding:1px 5px;border-radius:3px;color:var(--tun);}
+.hp{background:rgba(168,85,247,.15);padding:1px 5px;border-radius:3px;color:var(--enc);}
+.ho{background:rgba(249,115,22,.15);padding:1px 5px;border-radius:3px;color:var(--orange);}
+.stb{position:fixed;bottom:26px;right:26px;
+  background:linear-gradient(135deg,var(--vpn),var(--vpn2));
+  color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 22px rgba(99,102,241,.45);transition:transform .2s;z-index:999;}
+.stb:hover{transform:translateY(-3px);}
+
+@media(max-width:700px){
+  .hero h1{font-size:28px;}
+  .proto-stack,.ssl-ipsec,.ipsec-modes,.mode-compare,.pkt-compare{grid-template-columns:1fr;}
+  .wrap{padding:0 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🔒 VIRTUAL PRIVATE NETWORK</div>
+    <h1><em>VPN</em><br>가상 사설망 완전 학습자료</h1>
+    <p class="hero-sub">터널링 · 암호화 · 인증의 3요소로 공개망 위에 안전한 사설망을 구축<br>IPSec · SSL/TLS · L2TP · PPTP · WireGuard 완전 정복</p>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-num">5</div><div class="hs-lbl">주요 프로토콜</div></div>
+      <div class="hs"><div class="hs-num">3</div><div class="hs-lbl">보안 기능</div></div>
+      <div class="hs"><div class="hs-num">4</div><div class="hs-lbl">구성 방식</div></div>
+      <div class="hs"><div class="hs-num">10+</div><div class="hs-lbl">기출 문제</div></div>
+    </div>
+    <div class="hero-pills">
+      <span class="hpill">🕳️ 터널링</span>
+      <span class="hpill">🔐 암호화</span>
+      <span class="hpill">🛡️ IPSec AH/ESP</span>
+      <span class="hpill">🌐 SSL VPN</span>
+      <span class="hpill">🔗 L2TP/PPTP</span>
+      <span class="hpill">⚡ WireGuard</span>
+      <span class="hpill">🏢 Site-to-Site</span>
+      <span class="hpill">💻 Remote Access</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="snav">
+  <div class="snav-inner">
+    <a href="#s01">01 VPN 개념</a>
+    <a href="#s02">02 핵심 기술</a>
+    <a href="#s03">03 터널링 원리</a>
+    <a href="#s04">04 IPSec</a>
+    <a href="#s05">05 AH vs ESP</a>
+    <a href="#s06">06 SSL VPN</a>
+    <a href="#s07">07 기타 프로토콜</a>
+    <a href="#s08">08 구성 방식</a>
+    <a href="#s09">09 전체 비교</a>
+    <a href="#s10">10 최종 정리</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ════ 01 VPN 개념 ════ -->
+<div class="sec" id="s01">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.4);">🔒</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 01</div>
+      <h2>VPN(가상 사설망)이란?</h2>
+      <div class="sec-desc">공개 인터넷 위에 암호화된 가상의 사설 터널을 구축하는 기술</div>
+    </div>
+  </div>
+
+  <p><strong>VPN(Virtual Private Network, 가상 사설망)</strong>은 공개 네트워크(인터넷)를 통해 사설 네트워크처럼 안전하게 통신할 수 있도록 <strong>암호화된 터널</strong>을 생성하는 기술이다. 물리적으로 별도의 전용선 없이도 <strong>기밀성·무결성·인증</strong>을 보장하는 가상의 사설망을 구성한다.</p>
+
+  <!-- VPN 터널 개념 다이어그램 -->
+  <div class="tunnel-diagram">
+    <div class="td-title">▶ VPN 터널 동작 개념 — 공개 인터넷을 통한 안전한 통신</div>
+
+    <!-- 전체 레이아웃 -->
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:560px;">
+
+      <!-- 위 — 터널 없는 일반 통신 -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--deny2);font-family:'JetBrains Mono',monospace;margin-bottom:8px;">
+          ① 일반 통신 — 평문 노출
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:7px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-size:18px;">🏢</div><div style="font-size:11px;color:var(--green);font-weight:700;">본사</div>
+          </div>
+          <div style="flex:1;position:relative;height:30px;">
+            <div style="width:100%;height:2px;background:var(--deny2);position:absolute;top:50%;transform:translateY(-50%);"></div>
+            <div style="position:absolute;top:2px;left:50%;transform:translateX(-50%);
+              font-size:10px;color:var(--deny2);font-weight:700;font-family:'JetBrains Mono',monospace;
+              background:rgba(239,68,68,.12);padding:1px 8px;border-radius:4px;white-space:nowrap;">
+              ⚠️ 평문 데이터 노출
+            </div>
+            <div style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--deny2);">▶</div>
+          </div>
+          <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:8px;text-align:center;">
+            <div style="font-size:14px;">🌍</div><div style="font-size:10px;color:var(--deny2);">인터넷</div>
+          </div>
+          <div style="flex:1;position:relative;height:30px;">
+            <div style="width:100%;height:2px;background:var(--deny2);position:absolute;top:50%;transform:translateY(-50%);"></div>
+            <div style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--deny2);">▶</div>
+          </div>
+          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:7px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-size:18px;">🏬</div><div style="font-size:11px;color:var(--green);font-weight:700;">지사</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border2);"></div>
+
+      <!-- 아래 — VPN 터널 통신 -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--vpn2);font-family:'JetBrains Mono',monospace;margin-bottom:8px;">
+          ② VPN 터널 — 암호화된 안전한 통신
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:7px;padding:8px 10px;text-align:center;min-width:72px;">
+            <div style="font-size:16px;">🏢</div><div style="font-size:10px;color:var(--green);font-weight:700;">본사</div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);">→</div>
+          <div style="background:rgba(99,102,241,.15);border:2px solid rgba(99,102,241,.5);border-radius:7px;padding:7px 10px;text-align:center;font-size:10px;font-weight:700;color:var(--vpn2);min-width:66px;box-shadow:0 0 10px rgba(99,102,241,.2);">
+            🔒<br>VPN<br>게이트웨이
+          </div>
+          <!-- 터널 파이프 -->
+          <div style="flex:1;position:relative;">
+            <div class="tunnel-pipe">
+              <div class="tp-cap-l"></div>
+              <div class="tp-body">
+                <div class="tp-label">🔐 암호화된 VPN 터널</div>
+              </div>
+              <div class="tp-cap-r"></div>
+            </div>
+            <div style="text-align:center;font-size:10px;color:var(--deny2);margin-top:3px;font-family:'JetBrains Mono',monospace;">
+              공개 인터넷 (도청해도 해독 불가)
+            </div>
+          </div>
+          <div style="background:rgba(99,102,241,.15);border:2px solid rgba(99,102,241,.5);border-radius:7px;padding:7px 10px;text-align:center;font-size:10px;font-weight:700;color:var(--vpn2);min-width:66px;box-shadow:0 0 10px rgba(99,102,241,.2);">
+            🔒<br>VPN<br>게이트웨이
+          </div>
+          <div style="font-size:11px;color:var(--text2);">→</div>
+          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:7px;padding:8px 10px;text-align:center;min-width:72px;">
+            <div style="font-size:16px;">🏬</div><div style="font-size:10px;color:var(--green);font-weight:700;">지사</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">VPN의 3가지 핵심 보안 기능</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;">
+    <div style="background:var(--bg2);border:1px solid rgba(99,102,241,.25);border-radius:10px;padding:18px;border-top:3px solid var(--vpn);">
+      <div style="font-size:22px;margin-bottom:8px;">🔐</div>
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:5px;">기밀성 (Confidentiality)</div>
+      <div style="font-size:12.5px;color:var(--text3);line-height:1.7;">데이터를 <strong>암호화</strong>하여 중간에서 도청해도 내용 해독 불가. AES·3DES 등 대칭키 암호화 알고리즘 적용</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(6,182,212,.25);border-radius:10px;padding:18px;border-top:3px solid var(--tun);">
+      <div style="font-size:22px;margin-bottom:8px;">✅</div>
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:5px;">무결성 (Integrity)</div>
+      <div style="font-size:12.5px;color:var(--text3);line-height:1.7;">데이터가 <strong>전송 중 변조되지 않았음</strong>을 보장. HMAC·MAC 등 해시 기반 메시지 인증 코드 사용</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:18px;border-top:3px solid var(--green);">
+      <div style="font-size:22px;margin-bottom:8px;">🪪</div>
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:5px;">인증 (Authentication)</div>
+      <div style="font-size:12.5px;color:var(--text3);line-height:1.7;">통신 상대방이 <strong>정당한 사용자임을 확인</strong>. 인증서·PSK·ID/PW 등 다양한 인증 방식 지원</div>
+    </div>
+  </div>
+
+  <div class="box bx-v">
+    <div class="bt">💡 VPN = 전용선 대비 비용 절감</div>
+    과거 원거리 지점 간 보안 통신은 값비싼 <strong>전용선(Leased Line)</strong>이 필요했다. VPN은 기존 인터넷 회선 위에 암호화 터널을 구성하여 전용선과 유사한 보안성을 훨씬 저렴하게 제공한다.
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 02 핵심 기술 ════ -->
+<div class="sec" id="s02">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.4);">⚙️</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 02</div>
+      <h2>VPN 핵심 기술 요소</h2>
+      <div class="sec-desc">터널링 · 암호화 · 인증 · 키 교환</div>
+    </div>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>기술 요소</th><th>역할</th><th>대표 알고리즘·프로토콜</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="tk tv">터널링 (Tunneling)</td>
+        <td>패킷을 다른 패킷으로 캡슐화하여 가상 터널을 통해 전송</td>
+        <td>IPSec, L2TP, PPTP, GRE, WireGuard</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--enc);">암호화 (Encryption)</td>
+        <td>데이터 내용을 암호화하여 기밀성 보장</td>
+        <td><strong>AES-256</strong>(현대 표준), 3DES(구형), ChaCha20</td>
+      </tr>
+      <tr>
+        <td class="tk tg">인증 (Authentication)</td>
+        <td>VPN 터널 양단의 신원 검증, 데이터 출처 확인</td>
+        <td>X.509 인증서, PSK(사전 공유 키), RADIUS, EAP</td>
+      </tr>
+      <tr>
+        <td class="tk tc">무결성 (Integrity)</td>
+        <td>전송 중 데이터 변조 탐지</td>
+        <td>HMAC-SHA256, HMAC-MD5(구형)</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--gold);">키 교환 (Key Exchange)</td>
+        <td>암호화 키를 안전하게 협상·교환</td>
+        <td><strong>DH(Diffie-Hellman)</strong>, ECDH, IKE(v1/v2)</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="box bx-y">
+    <div class="bt">💡 DH(Diffie-Hellman) 키 교환 — 공개 채널에서 비밀 키 생성</div>
+    VPN에서 암호화 키를 어떻게 안전하게 공유할까? <strong>Diffie-Hellman 알고리즘</strong>은 공개 채널(도청 가능)을 통해서도 제3자가 알 수 없는 공유 비밀 키를 생성한다. A와 B가 각자의 비밀값과 공개값을 교환하면 동일한 세션 키를 도출할 수 있다. IPSec IKE 핸드셰이크의 핵심이다.
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 03 터널링 원리 ════ -->
+<div class="sec" id="s03">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.4);">🕳️</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 03</div>
+      <h2>터널링 (Tunneling) 원리</h2>
+      <div class="sec-desc">원본 패킷을 새로운 패킷으로 캡슐화(Encapsulation)하는 핵심 메커니즘</div>
+    </div>
+  </div>
+
+  <p><strong>캡슐화(Encapsulation)</strong>는 원본 패킷 전체를 페이로드로 감싸 새로운 IP 헤더를 붙이는 과정이다. 공개 인터넷에서는 새 IP 헤더의 VPN 게이트웨이 주소로 라우팅되며, 목적지 VPN 게이트웨이에서 역캡슐화(Decapsulation)된다.</p>
+
+  <div class="pkt-compare">
+    <div class="pkt-card">
+      <div class="pkt-title" style="color:var(--deny2);">⚠️ 일반 IP 패킷 (암호화 없음)</div>
+      <div class="pkt-layers">
+        <div class="pkt-layer" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--gold);">IP 헤더 (출발지/목적지 IP)</div>
+        <div class="pkt-layer" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--blue);">TCP/UDP 헤더 (포트 번호)</div>
+        <div class="pkt-layer" style="background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--deny2);">페이로드 데이터 (평문 노출!)</div>
+      </div>
+    </div>
+    <div class="pkt-card">
+      <div class="pkt-title" style="color:var(--vpn2);">🔒 VPN 캡슐화 패킷 (IPSec 터널 모드)</div>
+      <div class="pkt-layers">
+        <div class="pkt-layer" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:var(--gold);">새 IP 헤더 (VPN GW IP)</div>
+        <div class="pkt-layer" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.3);color:var(--enc);">IPSec ESP 헤더</div>
+        <div style="background:rgba(99,102,241,.06);border:2px dashed rgba(99,102,241,.35);border-radius:5px;padding:8px;margin:2px 0;">
+          <div style="font-size:9px;color:var(--vpn2);margin-bottom:4px;font-family:'JetBrains Mono',monospace;">🔐 암호화 영역</div>
+          <div class="pkt-layer" style="background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:var(--gold);margin-bottom:3px;">원본 IP 헤더 (숨겨짐)</div>
+          <div class="pkt-layer" style="background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.2);color:var(--blue);margin-bottom:3px;">원본 TCP/UDP 헤더</div>
+          <div class="pkt-layer" style="background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.2);color:var(--green);">원본 데이터 (암호화)</div>
+        </div>
+        <div class="pkt-layer" style="background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.2);color:var(--enc);">ESP 트레일러 / ICV (무결성)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">터널 모드 vs 전송 모드</div>
+  <div class="mode-compare">
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:18px;border-top:3px solid var(--vpn);">
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;">터널 모드 (Tunnel Mode)</div>
+      <div style="font-size:11px;color:var(--vpn2);font-family:'JetBrains Mono',monospace;margin-bottom:10px;">원본 패킷 전체 캡슐화</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:10px;">
+        <strong>원본 IP 헤더까지 암호화</strong>하여 새 IP 헤더를 붙인다. 출발지·목적지 IP가 은닉된다. VPN 게이트웨이 간 또는 원격 접속에 주로 사용.
+      </div>
+      <div style="font-size:11px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:5px;padding:8px;color:var(--text3);">
+        <span style="color:var(--vpn2);font-weight:700;">사용:</span> Site-to-Site VPN, 원격 접속 VPN
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:18px;border-top:3px solid var(--tun);">
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;">전송 모드 (Transport Mode)</div>
+      <div style="font-size:11px;color:var(--tun);font-family:'JetBrains Mono',monospace;margin-bottom:10px;">페이로드만 캡슐화</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:10px;">
+        원본 IP 헤더는 그대로 두고 <strong>페이로드(TCP/UDP + 데이터)만 암호화</strong>한다. 출발지·목적지 IP는 노출된다. 종단 간(End-to-End) 보안에 사용.
+      </div>
+      <div style="font-size:11px;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);border-radius:5px;padding:8px;color:var(--text3);">
+        <span style="color:var(--tun);font-weight:700;">사용:</span> 호스트 간 직접 통신, L2TP 내부
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 기출 퀴즈 1 -->
+<div class="quiz-wrap">
+  <div class="quiz-header">
+    <div class="quiz-badge">📝 기출 유형</div>
+    <div class="quiz-title">확인 문제 — VPN 개념·터널링</div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q1 · 군무원 / 9급 공무원 유형</div>
+    <div class="q-text">VPN(가상 사설망)에 대한 설명으로 <strong>옳지 않은</strong> 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>공개 인터넷을 통해 암호화된 터널을 구성하여 사설망처럼 통신할 수 있다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>터널링, 암호화, 인증을 핵심 기술 요소로 사용한다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>VPN은 전용 물리적 회선을 사용하므로 일반 인터넷 회선보다 비용이 높다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>데이터의 기밀성, 무결성, 인증을 보장한다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      VPN은 <strong>물리적 전용 회선을 사용하지 않는다</strong>. 기존 공개 인터넷 회선 위에 소프트웨어적으로 암호화 터널을 구성하므로 전용 전용선 대비 <strong>비용이 훨씬 저렴</strong>하다. 이것이 VPN의 가장 큰 장점 중 하나다.
+    </div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q2 · 정보보호 기사 유형</div>
+    <div class="q-text">IPSec의 <strong>터널 모드(Tunnel Mode)</strong>와 <strong>전송 모드(Transport Mode)</strong>의 차이로 옳은 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>터널 모드는 페이로드만 암호화하고, 전송 모드는 IP 헤더까지 암호화한다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">②</span>터널 모드는 원본 IP 헤더까지 암호화하여 새 IP 헤더를 붙이고, 전송 모드는 페이로드만 보호한다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">③</span>터널 모드는 UDP를 사용하고, 전송 모드는 TCP를 사용한다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>터널 모드와 전송 모드는 암호화 범위가 동일하고 헤더 구조만 다르다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ②</div>
+      <strong>터널 모드</strong>: 원본 패킷(헤더+페이로드) 전체를 암호화 후 새 IP 헤더 추가 → IP 주소 은닉, Site-to-Site 사용<br>
+      <strong>전송 모드</strong>: 원본 IP 헤더는 유지, 페이로드만 암호화 → IP 주소 노출, End-to-End 사용
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 04 IPSec ════ -->
+<div class="sec" id="s04">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.4);">🛡️</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 04</div>
+      <h2>IPSec (IP Security)</h2>
+      <div class="sec-desc">네트워크 계층(L3)에서 동작하는 가장 표준적인 VPN 프로토콜 스위트</div>
+    </div>
+  </div>
+
+  <p><strong>IPSec</strong>은 IP 패킷에 대한 인증·암호화·무결성을 제공하는 프로토콜 집합이다. <strong>L3(네트워크 계층)</strong>에서 동작하므로 상위 응용 프로그램과 독립적으로 모든 IP 트래픽을 보호한다.</p>
+
+  <div class="sub">IPSec 구성 요소</div>
+  <div class="tw"><table>
+    <thead><tr><th>구성 요소</th><th>역할</th><th>동작 포트/프로토콜</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="tk" style="color:var(--gold);">IKE (v1/v2)<br>Internet Key Exchange</td>
+        <td>IPSec 연결 협상·키 교환 프로토콜. SA(Security Association)를 수립하고 세션 키를 협상한다</td>
+        <td class="ty"><strong>UDP 500</strong> (IKE)<br>UDP 4500 (NAT-T)</td>
+      </tr>
+      <tr>
+        <td class="tk tg">AH<br>Authentication Header</td>
+        <td>인증 + 무결성 제공. <strong>암호화는 없음.</strong> IP 헤더 포함 무결성 검증</td>
+        <td class="tc">IP 프로토콜 번호 <strong>51</strong></td>
+      </tr>
+      <tr>
+        <td class="tk tp">ESP<br>Encapsulating Security Payload</td>
+        <td>암호화 + 인증 + 무결성 모두 제공. <strong>VPN에서 주로 사용</strong></td>
+        <td class="tc">IP 프로토콜 번호 <strong>50</strong></td>
+      </tr>
+      <tr>
+        <td class="tk tv">SA<br>Security Association</td>
+        <td>두 VPN 피어 간 보안 매개변수(알고리즘, 키, 모드) 합의. 단방향 → 양방향은 SA 2개 필요</td>
+        <td>SAD(SA Database)에 저장</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="sub">IKE 2단계 협상 흐름</div>
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:22px;margin:14px 0;">
+    <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:2px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;">▶ IKEv1 / IKEv2 협상 흐름</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">PHASE 1 — IKE SA 수립</div>
+        <div style="font-size:12.5px;color:var(--text3);line-height:1.75;">
+          ① 암호화·해시·DH 그룹 협상<br>
+          ② DH 키 교환 → 세션 키 생성<br>
+          ③ 피어 신원 인증<br>
+          → <strong style="color:var(--gold);">IKE SA(보안 채널)</strong> 수립<br>
+          → 이후 통신을 암호화
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:20px;color:var(--text2);">→</div>
+      <div style="flex:1;min-width:200px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:14px 16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--enc);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">PHASE 2 — IPSec SA 수립</div>
+        <div style="font-size:12.5px;color:var(--text3);line-height:1.75;">
+          ④ Phase 1 채널에서 IPSec 협상<br>
+          ⑤ ESP/AH, 암호화 알고리즘 협상<br>
+          ⑥ 세션 키 생성<br>
+          → <strong style="color:var(--enc);">IPSec SA</strong> 수립<br>
+          → 실제 데이터 암호화 전송
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 05 AH vs ESP ════ -->
+<div class="sec" id="s05">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.4);">🔬</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 05</div>
+      <h2>AH vs ESP 상세 비교</h2>
+      <div class="sec-desc">인증 헤더(AH)와 보안 페이로드(ESP)의 보호 범위 차이</div>
+    </div>
+  </div>
+
+  <div class="ipsec-modes">
+    <!-- AH -->
+    <div class="im-card" style="border-top:3px solid var(--green);">
+      <div class="im-head" style="background:rgba(34,197,94,.06);">
+        <div style="font-size:22px;margin-bottom:5px;">✅</div>
+        <div style="font-size:17px;font-weight:900;color:#fff;">AH (Authentication Header)</div>
+        <div style="font-size:11px;color:var(--green);margin-top:3px;">IP 프로토콜 번호 51</div>
+      </div>
+      <div class="im-body">
+        <div style="font-size:13px;color:var(--text3);line-height:1.75;margin-bottom:12px;">
+          <strong>인증과 무결성만</strong> 제공하며 <span class="hr">암호화는 하지 않는다</span>. IP 헤더를 포함한 전체 패킷에 무결성 검증을 적용하여 패킷이 전송 중 변조되지 않았음을 보장한다.
+        </div>
+        <!-- AH 패킷 구조 -->
+        <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">패킷 구조 (전송 모드)</div>
+        <div class="ipsec-pkt">
+          <div class="ip-field ipf-orig-ip" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.35);color:var(--green);">
+            IP 헤더 (변경 불가 필드 포함)
+          </div>
+          <div class="ip-field ipf-ah">AH 헤더 (인증 데이터 포함)</div>
+          <div class="ip-field ipf-data">페이로드 (평문! 암호화 안 됨)</div>
+        </div>
+        <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:6px;padding:8px 12px;margin-top:10px;">
+          <div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:4px;">✅ AH 무결성 검증 범위</div>
+          <div style="font-size:12px;color:var(--text3);">IP 헤더(변경 불가 필드) + AH 헤더 + 페이로드 전체</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <span style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✓ 인증</span>
+          <span style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✓ 무결성</span>
+          <span style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--deny2);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✗ 암호화 없음</span>
+          <span style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--deny2);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✗ NAT 통과 어려움</span>
+        </div>
+      </div>
+    </div>
+    <!-- ESP -->
+    <div class="im-card" style="border-top:3px solid var(--enc);">
+      <div class="im-head" style="background:rgba(168,85,247,.07);">
+        <div style="font-size:22px;margin-bottom:5px;">🔐</div>
+        <div style="font-size:17px;font-weight:900;color:#fff;">ESP (Encapsulating Security Payload)</div>
+        <div style="font-size:11px;color:var(--enc);margin-top:3px;">IP 프로토콜 번호 50</div>
+      </div>
+      <div class="im-body">
+        <div style="font-size:13px;color:var(--text3);line-height:1.75;margin-bottom:12px;">
+          <strong>암호화 + 인증 + 무결성</strong>을 모두 제공한다. VPN에서 가장 많이 사용되는 방식으로, 페이로드(데이터)를 암호화하여 기밀성을 보장하고 ICV(무결성 검증값)로 변조를 탐지한다.
+        </div>
+        <!-- ESP 패킷 구조 -->
+        <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">패킷 구조 (터널 모드)</div>
+        <div class="ipsec-pkt">
+          <div class="ip-field ipf-new-ip">새 IP 헤더 (VPN GW 주소)</div>
+          <div class="ip-field ipf-esp">ESP 헤더</div>
+          <div class="ipf-enc">
+            <div class="enc-label">🔐 ESP 암호화 범위</div>
+            <div class="ip-field ipf-orig-ip" style="margin-bottom:3px;">원본 IP 헤더</div>
+            <div class="ip-field ipf-data" style="margin-bottom:3px;">원본 TCP/UDP 헤더</div>
+            <div class="ip-field ipf-data">원본 데이터 (암호화)</div>
+          </div>
+          <div class="ip-field ipf-esp">ESP 트레일러</div>
+          <div class="ip-field ipf-esp">ICV (무결성 검증값)</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);color:var(--enc);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✓ 암호화</span>
+          <span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);color:var(--enc);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✓ 인증</span>
+          <span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);color:var(--enc);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✓ 무결성</span>
+          <span style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green);font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;font-family:'JetBrains Mono',monospace;">✓ NAT 통과 가능</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tw" style="margin-top:16px;"><table>
+    <thead><tr><th>비교</th><th style="color:var(--green);">AH</th><th style="color:var(--enc);">ESP</th></tr></thead>
+    <tbody>
+      <tr><td class="tk">암호화</td><td class="tr">❌ 없음</td><td class="tg">✓ AES·3DES</td></tr>
+      <tr><td class="tk">인증·무결성</td><td class="tg">✓ IP 헤더 포함</td><td class="tg">✓ (IP 헤더 제외)</td></tr>
+      <tr><td class="tk">NAT 통과</td><td class="tr">❌ 어려움</td><td class="tg">✓ (NAT-T 사용)</td></tr>
+      <tr><td class="tk">IP 프로토콜 번호</td><td class="ty">51</td><td class="tp">50</td></tr>
+      <tr><td class="tk">주요 사용</td><td>무결성 보장만 필요한 경우</td><td class="tp">VPN 실제 구현 (대부분)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="box bx-y">
+    <div class="bt">💡 AH + ESP 동시 사용</div>
+    AH와 ESP를 함께 사용하면 <strong>IP 헤더까지 무결성 보장(AH) + 페이로드 암호화(ESP)</strong>를 동시에 달성할 수 있다. 단, 이는 복잡도를 높이며 NAT 통과가 어렵다. 현대 환경에서는 <strong>ESP만 사용</strong>하는 것이 일반적이다.
+  </div>
+</div>
+
+<!-- 기출 퀴즈 2 -->
+<div class="quiz-wrap">
+  <div class="quiz-header">
+    <div class="quiz-badge">📝 기출 유형</div>
+    <div class="quiz-title">확인 문제 — IPSec AH / ESP</div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q3 · 군무원 / 정보보호 기사 유형 ★★★</div>
+    <div class="q-text">IPSec에서 AH(Authentication Header)와 ESP(Encapsulating Security Payload)의 차이에 대한 설명으로 <strong>옳은</strong> 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>AH는 암호화 기능을 제공하고, ESP는 인증 기능만 제공한다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>AH와 ESP 모두 IP 헤더를 포함한 전체 패킷을 암호화한다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>AH는 암호화 없이 인증과 무결성만 제공하고, ESP는 암호화·인증·무결성을 모두 제공한다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>ESP는 IP 프로토콜 번호 51을, AH는 50을 사용한다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      <strong>AH(IP 번호 51)</strong>: 인증 + 무결성 / 암호화 없음 / NAT 통과 어려움<br>
+      <strong>ESP(IP 번호 50)</strong>: 암호화 + 인증 + 무결성 모두 제공 / NAT-T로 NAT 통과<br>
+      ④는 번호가 반대: AH=51, ESP=50
+    </div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q4 · 군무원 유형</div>
+    <div class="q-text">IPSec에서 SA(Security Association)에 대한 설명으로 옳은 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>양방향 통신에 SA 하나만 필요하다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>SA는 VPN의 물리적 연결을 의미한다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>SA는 단방향이므로 양방향 VPN 통신에는 SA가 2개 필요하다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>SA는 IKE Phase 2에서만 생성된다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      <strong>SA(Security Association)</strong>는 단방향(Unidirectional)이다. 양방향 통신을 위해서는 A→B SA와 B→A SA, <strong>총 2개의 SA</strong>가 필요하다. SA에는 암호화 알고리즘·키·모드 등 보안 매개변수가 저장된다. IKE Phase 1에서는 IKE SA, Phase 2에서는 IPSec SA가 생성된다.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 06 SSL VPN ════ -->
+<div class="sec" id="s06">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.4);">🌐</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 06</div>
+      <h2>SSL/TLS VPN</h2>
+      <div class="sec-desc">웹 브라우저만으로 접속 가능한 응용 계층 VPN — 원격 접속에 최적</div>
+    </div>
+  </div>
+
+  <p><strong>SSL VPN</strong>은 HTTPS(SSL/TLS) 기반으로 동작하는 VPN이다. 별도의 클라이언트 소프트웨어 없이 <strong>웹 브라우저만으로 접속</strong>할 수 있어 원격 접속에 매우 편리하다. <strong>TCP 443번 포트</strong>를 사용하므로 방화벽 통과가 용이하다.</p>
+
+  <div class="ssl-ipsec">
+    <div class="si-card" style="border-top:3px solid var(--tun);">
+      <div class="si-head" style="background:rgba(6,182,212,.06);">
+        <div style="font-size:22px;margin-bottom:5px;">🌐</div>
+        <div style="font-size:16px;font-weight:900;color:#fff;">SSL VPN</div>
+        <div style="font-size:11px;color:var(--tun);">Application Layer (L7)</div>
+      </div>
+      <div class="si-body">
+        <div class="si-row"><span class="si-key">동작 계층</span><span class="si-val" style="color:var(--tun);">L7 응용 계층</span></div>
+        <div class="si-row"><span class="si-key">사용 포트</span><span class="si-val" style="color:var(--gold);">TCP 443 (HTTPS)</span></div>
+        <div class="si-row"><span class="si-key">클라이언트</span><span class="si-val" style="color:var(--green);">웹 브라우저만 가능</span></div>
+        <div class="si-row"><span class="si-key">방화벽 통과</span><span class="si-val" style="color:var(--green);">✓ 용이 (443 허용)</span></div>
+        <div class="si-row"><span class="si-key">설치 복잡도</span><span class="si-val" style="color:var(--green);">낮음</span></div>
+        <div class="si-row"><span class="si-key">접근 범위</span><span class="si-val">특정 애플리케이션</span></div>
+        <div class="si-row"><span class="si-key">주요 용도</span><span class="si-val">원격 재택근무, 외부 접속</span></div>
+        <div class="si-row"><span class="si-key">NAT 통과</span><span class="si-val" style="color:var(--green);">✓ 문제없음</span></div>
+      </div>
+    </div>
+    <div class="si-card" style="border-top:3px solid var(--enc);">
+      <div class="si-head" style="background:rgba(168,85,247,.07);">
+        <div style="font-size:22px;margin-bottom:5px;">🛡️</div>
+        <div style="font-size:16px;font-weight:900;color:#fff;">IPSec VPN</div>
+        <div style="font-size:11px;color:var(--enc);">Network Layer (L3)</div>
+      </div>
+      <div class="si-body">
+        <div class="si-row"><span class="si-key">동작 계층</span><span class="si-val" style="color:var(--enc);">L3 네트워크 계층</span></div>
+        <div class="si-row"><span class="si-key">사용 포트</span><span class="si-val" style="color:var(--gold);">UDP 500 / ESP(50) / AH(51)</span></div>
+        <div class="si-row"><span class="si-key">클라이언트</span><span class="si-val" style="color:var(--deny2);">별도 소프트웨어 필요</span></div>
+        <div class="si-row"><span class="si-key">방화벽 통과</span><span class="si-val" style="color:var(--deny2);">❌ 어려울 수 있음</span></div>
+        <div class="si-row"><span class="si-key">설치 복잡도</span><span class="si-val" style="color:var(--deny2);">높음</span></div>
+        <div class="si-row"><span class="si-key">접근 범위</span><span class="si-val" style="color:var(--green);">전체 네트워크</span></div>
+        <div class="si-row"><span class="si-key">주요 용도</span><span class="si-val">Site-to-Site, 기업망</span></div>
+        <div class="si-row"><span class="si-key">NAT 통과</span><span class="si-val" style="color:var(--gold);">NAT-T(UDP 4500) 필요</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box bx-y">
+    <div class="bt">💡 SSL VPN vs IPSec VPN 선택 기준</div>
+    <strong>SSL VPN</strong>: 재택근무자, 외부 직원 → 브라우저만으로 사내 웹 시스템 접근. 설치 간편.<br>
+    <strong>IPSec VPN</strong>: 본사↔지사 항상 연결, 네트워크 레벨 완전 통합이 필요할 때. 더 낮은 오버헤드.
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 07 기타 프로토콜 ════ -->
+<div class="sec" id="s07">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.4);">📡</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 07</div>
+      <h2>VPN 프로토콜 상세 비교</h2>
+      <div class="sec-desc">PPTP · L2TP · IPSec · SSL · WireGuard 전체 비교</div>
+    </div>
+  </div>
+
+  <div class="proto-stack">
+
+    <div class="ps-card" style="border-top-color:var(--deny2);">
+      <div class="ps-head" style="background:rgba(239,68,68,.05);">
+        <div class="ps-name">PPTP</div>
+        <div class="ps-full">Point-to-Point Tunneling Protocol</div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-layer">
+          <div class="psl-item" style="background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--deny2);">GRE 캡슐화</div>
+          <div class="psl-item" style="background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.2);color:var(--deny2);">PPP 페이로드 (암호화)</div>
+        </div>
+        <div class="ps-meta">
+          <div class="ps-row"><span class="ps-key">포트</span><span style="color:var(--gold);font-weight:700;">TCP 1723</span></div>
+          <div class="ps-row"><span class="ps-key">암호화</span><span style="color:var(--deny2);font-weight:700;">MPPE (약함)</span></div>
+          <div class="ps-row"><span class="ps-key">보안</span><span style="color:var(--deny2);font-weight:700;">낮음 ⚠️ 취약</span></div>
+          <div class="ps-row"><span class="ps-key">속도</span><span style="color:var(--green);font-weight:700;">빠름</span></div>
+          <div class="ps-row"><span class="ps-key">현재 상태</span><span style="color:var(--deny2);font-weight:700;">사용 지양 (레거시)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card" style="border-top-color:var(--gold);">
+      <div class="ps-head" style="background:rgba(245,158,11,.05);">
+        <div class="ps-name">L2TP/IPSec</div>
+        <div class="ps-full">Layer 2 Tunneling Protocol</div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-layer">
+          <div class="psl-item" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.3);color:var(--enc);">IPSec (암호화)</div>
+          <div class="psl-item" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--gold);">L2TP (터널링)</div>
+          <div class="psl-item" style="background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.2);color:var(--gold);">PPP 페이로드</div>
+        </div>
+        <div class="ps-meta">
+          <div class="ps-row"><span class="ps-key">포트</span><span style="color:var(--gold);font-weight:700;">UDP 1701 (L2TP)<br>UDP 500 (IKE)</span></div>
+          <div class="ps-row"><span class="ps-key">암호화</span><span style="color:var(--green);font-weight:700;">IPSec AES</span></div>
+          <div class="ps-row"><span class="ps-key">보안</span><span style="color:var(--green);font-weight:700;">좋음</span></div>
+          <div class="ps-row"><span class="ps-key">속도</span><span style="color:var(--gold);font-weight:700;">보통 (이중 캡슐화)</span></div>
+          <div class="ps-row"><span class="ps-key">NAT</span><span style="color:var(--deny2);font-weight:700;">어려움</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card" style="border-top-color:var(--enc);">
+      <div class="ps-head" style="background:rgba(168,85,247,.06);">
+        <div class="ps-name">IPSec</div>
+        <div class="ps-full">IP Security Protocol Suite</div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-layer">
+          <div class="psl-item" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.35);color:var(--enc);">IKEv2 키 교환</div>
+          <div class="psl-item" style="background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--enc);">ESP 암호화/인증</div>
+        </div>
+        <div class="ps-meta">
+          <div class="ps-row"><span class="ps-key">포트</span><span style="color:var(--gold);font-weight:700;">UDP 500 / ESP(50)</span></div>
+          <div class="ps-row"><span class="ps-key">암호화</span><span style="color:var(--green);font-weight:700;">AES-256 (강력)</span></div>
+          <div class="ps-row"><span class="ps-key">보안</span><span style="color:var(--green);font-weight:700;">매우 높음 ★★★</span></div>
+          <div class="ps-row"><span class="ps-key">속도</span><span style="color:var(--gold);font-weight:700;">보통</span></div>
+          <div class="ps-row"><span class="ps-key">표준화</span><span style="color:var(--green);font-weight:700;">IETF RFC 표준</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card" style="border-top-color:var(--tun);">
+      <div class="ps-head" style="background:rgba(6,182,212,.05);">
+        <div class="ps-name">OpenVPN</div>
+        <div class="ps-full">오픈소스 SSL/TLS VPN</div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-layer">
+          <div class="psl-item" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--tun);">TLS 1.3 (OpenSSL)</div>
+          <div class="psl-item" style="background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.2);color:var(--tun);">UDP/TCP 터널</div>
+        </div>
+        <div class="ps-meta">
+          <div class="ps-row"><span class="ps-key">포트</span><span style="color:var(--gold);font-weight:700;">UDP/TCP 1194</span></div>
+          <div class="ps-row"><span class="ps-key">암호화</span><span style="color:var(--green);font-weight:700;">AES-256-GCM</span></div>
+          <div class="ps-row"><span class="ps-key">방화벽 통과</span><span style="color:var(--green);font-weight:700;">✓ 443 포트 가능</span></div>
+          <div class="ps-row"><span class="ps-key">오픈소스</span><span style="color:var(--green);font-weight:700;">✓</span></div>
+          <div class="ps-row"><span class="ps-key">클라이언트</span><span style="color:var(--deny2);font-weight:700;">별도 설치 필요</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card" style="border-top-color:var(--vpn2);">
+      <div class="ps-head" style="background:rgba(99,102,241,.06);">
+        <div class="ps-name">IKEv2/IPSec</div>
+        <div class="ps-full">Internet Key Exchange v2</div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-layer">
+          <div class="psl-item" style="background:rgba(99,102,241,.12);border-color:rgba(99,102,241,.35);color:var(--vpn2);">IKEv2 (빠른 재연결)</div>
+          <div class="psl-item" style="background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--enc);">IPSec ESP 암호화</div>
+        </div>
+        <div class="ps-meta">
+          <div class="ps-row"><span class="ps-key">포트</span><span style="color:var(--gold);font-weight:700;">UDP 500 / 4500</span></div>
+          <div class="ps-row"><span class="ps-key">모바일 지원</span><span style="color:var(--green);font-weight:700;">✓ MOBIKE</span></div>
+          <div class="ps-row"><span class="ps-key">재연결 속도</span><span style="color:var(--green);font-weight:700;">매우 빠름</span></div>
+          <div class="ps-row"><span class="ps-key">OS 기본 지원</span><span style="color:var(--green);font-weight:700;">Windows·iOS·Android</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ps-card" style="border-top-color:var(--green);">
+      <div class="ps-head" style="background:rgba(34,197,94,.05);">
+        <div class="ps-name">WireGuard</div>
+        <div class="ps-full">차세대 경량 VPN 프로토콜</div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-layer">
+          <div class="psl-item" style="background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--green);">ChaCha20 암호화</div>
+          <div class="psl-item" style="background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);color:var(--green);">Curve25519 키 교환</div>
+        </div>
+        <div class="ps-meta">
+          <div class="ps-row"><span class="ps-key">포트</span><span style="color:var(--gold);font-weight:700;">UDP 51820</span></div>
+          <div class="ps-row"><span class="ps-key">코드 라인</span><span style="color:var(--green);font-weight:700;">~4,000줄 (경량)</span></div>
+          <div class="ps-row"><span class="ps-key">속도</span><span style="color:var(--green);font-weight:700;">최고 ★★★★★</span></div>
+          <div class="ps-row"><span class="ps-key">보안</span><span style="color:var(--green);font-weight:700;">최신 암호화</span></div>
+          <div class="ps-row"><span class="ps-key">리눅스 커널</span><span style="color:var(--green);font-weight:700;">✓ 5.6 이상 내장</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 08 구성 방식 ════ -->
+<div class="sec" id="s08">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.4);">🏗️</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 08</div>
+      <h2>VPN 구성 방식 (4가지)</h2>
+      <div class="sec-desc">어디와 어디를 연결하는가에 따른 VPN 배치 유형</div>
+    </div>
+  </div>
+
+  <div class="scenario-cards">
+
+    <div class="sc-card" style="border-left-color:var(--vpn2);">
+      <div class="sc-head">
+        <div class="sc-icon">🏢↔🏬</div>
+        <div>
+          <div class="sc-title">Site-to-Site VPN (거점 간 VPN)</div>
+          <div class="sc-en">LAN-to-LAN VPN · Gateway-to-Gateway VPN</div>
+        </div>
+      </div>
+      <div class="vpn-type-diagram" style="margin:0 0 10px;">
+        <div class="vtd-title">▶ Site-to-Site 구성</div>
+        <div class="net-row">
+          <div class="n-box n-corp">🏢<br>본사 내부망<br><span style="font-size:9px;">192.168.1.0/24</span></div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-vpn-gw" style="min-width:70px;">🔒<br>VPN GW<br><span style="font-size:9px;">본사측</span></div>
+          <div class="tunnel-arrow"><div class="ta-inner"><span class="ta-text">IPSec 터널</span></div></div>
+          <div class="n-box n-vpn-gw" style="min-width:70px;">🔒<br>VPN GW<br><span style="font-size:9px;">지사측</span></div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-corp">🏬<br>지사 내부망<br><span style="font-size:9px;">10.0.0.0/24</span></div>
+        </div>
+      </div>
+      <div class="sc-desc">두 개 이상의 <strong>거점 네트워크(LAN)를 VPN으로 연결</strong>한다. 각 거점의 VPN 게이트웨이(방화벽·라우터) 간에 항상 유지되는 IPSec 터널을 구성한다. 사용자는 VPN을 의식하지 않고 다른 거점 시스템에 접근할 수 있다.</div>
+    </div>
+
+    <div class="sc-card" style="border-left-color:var(--gold);">
+      <div class="sc-head">
+        <div class="sc-icon">👤↔🏢</div>
+        <div>
+          <div class="sc-title">Remote Access VPN (원격 접속 VPN)</div>
+          <div class="sc-en">Client-to-Gateway VPN · 재택근무·출장자</div>
+        </div>
+      </div>
+      <div class="vpn-type-diagram" style="margin:0 0 10px;">
+        <div class="vtd-title">▶ Remote Access 구성</div>
+        <div class="net-row">
+          <div class="n-box n-client">💻<br>재택근무자<br><span style="font-size:9px;">동적 IP</span></div>
+          <div class="n-arrow">→</div>
+          <div class="tunnel-arrow"><div class="ta-inner"><span class="ta-text">SSL/IPSec 터널</span></div></div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-vpn-gw" style="min-width:70px;">🔒<br>VPN<br>서버</div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-corp">🏢<br>사내망</div>
+        </div>
+      </div>
+      <div class="sc-desc"><strong>개별 사용자(클라이언트)가 사내 네트워크에 원격으로 접속</strong>한다. SSL VPN(브라우저) 또는 IPSec 클라이언트를 사용한다. 재택근무·출장·이동 중 사내 시스템 접근에 사용된다.</div>
+    </div>
+
+    <div class="sc-card" style="border-left-color:var(--tun);">
+      <div class="sc-head">
+        <div class="sc-icon">💻↔💻</div>
+        <div>
+          <div class="sc-title">End-to-End VPN (종단 간 VPN)</div>
+          <div class="sc-en">Host-to-Host VPN</div>
+        </div>
+      </div>
+      <div class="vpn-type-diagram" style="margin:0 0 10px;">
+        <div class="vtd-title">▶ End-to-End 구성</div>
+        <div class="net-row">
+          <div class="n-box n-client">🖥️<br>호스트 A<br><span style="font-size:9px;">VPN 클라이언트</span></div>
+          <div class="tunnel-arrow"><div class="ta-inner"><span class="ta-text">IPSec (전송 모드)</span></div></div>
+          <div class="n-box n-client">🖥️<br>호스트 B<br><span style="font-size:9px;">VPN 클라이언트</span></div>
+        </div>
+      </div>
+      <div class="sc-desc">두 개의 <strong>호스트(PC·서버) 간에 직접 VPN 터널</strong>을 구성한다. IPSec 전송 모드를 주로 사용하며, 중간 게이트웨이 없이 종단 간 암호화를 적용한다. 특정 서버 간 보안 통신에 사용된다.</div>
+    </div>
+
+    <div class="sc-card" style="border-left-color:var(--green);">
+      <div class="sc-head">
+        <div class="sc-icon">☁️</div>
+        <div>
+          <div class="sc-title">Cloud VPN / SD-WAN VPN</div>
+          <div class="sc-en">클라우드 환경 VPN 연결</div>
+        </div>
+      </div>
+      <div class="vpn-type-diagram" style="margin:0 0 10px;">
+        <div class="vtd-title">▶ Cloud VPN 구성</div>
+        <div class="net-row">
+          <div class="n-box n-corp">🏢<br>온프레미스</div>
+          <div class="tunnel-arrow"><div class="ta-inner"><span class="ta-text">IPSec/TLS 터널</span></div></div>
+          <div class="n-box n-cloud">☁️<br>클라우드<br><span style="font-size:9px;">AWS/Azure/GCP</span></div>
+        </div>
+      </div>
+      <div class="sc-desc">온프레미스 데이터센터와 <strong>클라우드(AWS·Azure·GCP) 간 VPN</strong> 연결. 클라우드 리소스를 사내망처럼 안전하게 접근한다. SD-WAN과 결합하여 다중 클라우드·지사 연결을 최적화한다.</div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 09 전체 비교 ════ -->
+<div class="sec" id="s09">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(240,165,0,.1);border-color:rgba(240,165,0,.4);">📊</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 09</div>
+      <h2>VPN 프로토콜 전체 비교표</h2>
+    </div>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>프로토콜</th><th>계층</th><th>포트</th><th>암호화</th><th>보안</th><th>속도</th><th>주요 특징</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="tk" style="color:var(--deny2);">PPTP</td>
+        <td>L2</td><td>TCP 1723</td><td class="tr">MPPE (취약)</td>
+        <td class="tr">낮음 ⚠️</td><td class="tg">빠름</td>
+        <td>레거시, 사용 지양</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--gold);">L2TP/IPSec</td>
+        <td>L2+L3</td><td>UDP 1701+500</td><td class="tg">AES</td>
+        <td class="tg">좋음</td><td class="ty">보통</td>
+        <td>이중 캡슐화, NAT 어려움</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--enc);">IPSec (ESP)</td>
+        <td>L3</td><td>UDP 500, ESP(50)</td><td class="tg">AES-256</td>
+        <td class="tg">매우 높음 ★</td><td class="ty">보통</td>
+        <td>표준, Site-to-Site 주로 사용</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--tun);">OpenVPN</td>
+        <td>L3</td><td>UDP/TCP 1194</td><td class="tg">AES-256-GCM</td>
+        <td class="tg">높음</td><td class="ty">보통</td>
+        <td>오픈소스, 방화벽 우회 가능</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--vpn2);">IKEv2/IPSec</td>
+        <td>L3</td><td>UDP 500/4500</td><td class="tg">AES-256</td>
+        <td class="tg">높음</td><td class="tg">빠른 재연결</td>
+        <td>MOBIKE, 모바일 최적화</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--green);">WireGuard</td>
+        <td>L3</td><td>UDP 51820</td><td class="tg">ChaCha20</td>
+        <td class="tg">최신·높음</td><td class="tg">최고 ★★★</td>
+        <td>경량(4천줄), 리눅스 커널 내장</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--tun);">SSL VPN</td>
+        <td>L7</td><td>TCP 443</td><td class="tg">TLS 1.3</td>
+        <td class="tg">높음</td><td class="ty">보통</td>
+        <td>브라우저만으로 접속, 방화벽 통과 용이</td>
+      </tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- 기출 퀴즈 3 -->
+<div class="quiz-wrap">
+  <div class="quiz-header">
+    <div class="quiz-badge">📝 기출 유형</div>
+    <div class="quiz-title">확인 문제 — VPN 프로토콜 · 구성</div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q5 · 군무원 / 정보보호 기사 유형</div>
+    <div class="q-text">SSL VPN에 대한 설명으로 <strong>옳지 않은</strong> 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>응용 계층(L7)에서 동작하며 HTTPS 기반으로 구현된다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>TCP 443번 포트를 사용하므로 방화벽 통과가 용이하다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>전용 클라이언트 소프트웨어가 반드시 필요하므로 설치 부담이 크다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>원격 재택근무 환경에서 웹 브라우저만으로 사내 시스템에 접근할 수 있다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      <strong>SSL VPN</strong>의 가장 큰 장점 중 하나가 <strong>웹 브라우저만으로 접속 가능</strong>하다는 것이다. 별도의 VPN 클라이언트 소프트웨어 설치 없이 HTTPS를 통해 접속한다. 별도 클라이언트가 필요한 것은 IPSec VPN이나 OpenVPN이다.
+    </div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q6 · 군무원 기출 유형</div>
+    <div class="q-text">본사와 지사 간 항상 연결된 VPN 터널을 구성하여 양쪽 직원이 서로의 내부 시스템에 접근할 수 있도록 하는 VPN 구성 방식은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>Remote Access VPN</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">②</span>Site-to-Site VPN</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">③</span>End-to-End VPN</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>Cloud VPN</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ②</div>
+      <strong>Site-to-Site VPN(거점 간 VPN)</strong>: 두 거점의 VPN 게이트웨이 간 항상 유지되는 터널. 사용자가 VPN을 의식하지 않고 다른 거점 시스템에 접근. Remote Access는 개별 사용자→사내망, End-to-End는 호스트 간 직접 연결이다.
+    </div>
+  </div>
+  <div class="q-item">
+    <div class="q-num">Q7 · 군무원 유형</div>
+    <div class="q-text">VPN 프로토콜 중 <strong>보안이 취약하여 현재 사용을 지양</strong>해야 하는 레거시 프로토콜은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">①</span>PPTP (Point-to-Point Tunneling Protocol)</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>IKEv2/IPSec</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">③</span>WireGuard</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>OpenVPN</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ①</div>
+      <strong>PPTP</strong>는 1990년대 개발된 레거시 VPN 프로토콜로, <strong>MPPE 암호화의 취약점</strong>이 다수 발견되어 현재는 보안 전문가들이 사용을 강력히 지양한다. Microsoft도 PPTP 사용을 권고하지 않는다. 현대 권장 프로토콜: IKEv2/IPSec, WireGuard, OpenVPN.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ════ 10 최종 정리 ════ -->
+<div class="sec" id="s10">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(240,165,0,.1);border-color:rgba(240,165,0,.4);">📋</div>
+    <div class="sec-meta">
+      <div class="sec-num">SECTION 10</div>
+      <h2>최종 정리 & 시험 핵심 포인트</h2>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(99,102,241,.02));
+    border:1px solid rgba(99,102,241,.25);border-radius:12px;padding:26px;margin:16px 0;">
+    <div style="font-size:15px;font-weight:900;color:var(--vpn2);text-align:center;margin-bottom:18px;">🎯 VPN 핵심 암기표</div>
+    <div class="tw"><table>
+      <thead><tr><th>항목</th><th>핵심 내용</th></tr></thead>
+      <tbody>
+        <tr><td class="tk">VPN 3요소</td><td><span class="hv">터널링</span> + <span class="hp">암호화</span> + <span class="hg">인증</span></td></tr>
+        <tr><td class="tk">IPSec AH</td><td>프로토콜 번호 <span class="hy">51</span> / 인증+무결성 / <span class="hr">암호화 없음</span> / NAT 통과 어려움</td></tr>
+        <tr><td class="tk">IPSec ESP</td><td>프로토콜 번호 <span class="hy">50</span> / <span class="hg">암호화+인증+무결성</span> / VPN 실제 구현</td></tr>
+        <tr><td class="tk">IKE 포트</td><td>UDP <span class="hy">500</span> (IKE 협상) / UDP <span class="hy">4500</span> (NAT-T)</td></tr>
+        <tr><td class="tk">터널 vs 전송 모드</td><td>터널=<span class="hv">원본 IP 헤더까지 암호화</span> / 전송=페이로드만</td></tr>
+        <tr><td class="tk">SSL VPN</td><td>L7, TCP <span class="hy">443</span>, <span class="hg">브라우저만으로 접속</span>, 방화벽 통과 용이</td></tr>
+        <tr><td class="tk">IPSec vs SSL</td><td>IPSec=L3(네트워크 전체) / SSL=L7(특정 앱), 브라우저</td></tr>
+        <tr><td class="tk">PPTP</td><td><span class="hr">레거시·보안 취약</span> (TCP 1723, MPPE), 사용 지양</td></tr>
+        <tr><td class="tk">WireGuard</td><td>최신·경량·최고 속도 (UDP 51820, ChaCha20)</td></tr>
+        <tr><td class="tk">Site-to-Site</td><td>거점 간 항상 연결 (본사↔지사)</td></tr>
+        <tr><td class="tk">Remote Access</td><td>개인→사내망 (재택근무·출장)</td></tr>
+        <tr><td class="tk">DH 알고리즘</td><td>공개 채널에서 안전한 키 교환, IKE의 핵심</td></tr>
+        <tr><td class="tk">SA</td><td>단방향 — 양방향에 SA 2개 필요</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="box bx-y" style="text-align:center;padding:22px;">
+    <div class="bt" style="font-size:15px;text-align:center;">💡 혼동하기 쉬운 포인트</div>
+    AH 번호 = <span class="hy">51</span> / ESP 번호 = <span class="hy">50</span> (AH가 51로 더 크다)<br><br>
+    AH = <span class="hg">인증·무결성</span>만 / ESP = <span class="hp">암호화+인증+무결성</span> 모두<br><br>
+    SSL VPN = <span class="hg">브라우저로 접속 가능</span> / IPSec VPN = <span class="hr">별도 클라이언트 필요</span><br><br>
+    터널 모드 = <span class="hv">원본 IP 헤더까지 새 헤더로 감쌈</span> (주소 완전 은닉)
+  </div>
+
+  <!-- 최종 기출 -->
+  <div class="quiz-wrap" style="margin-top:24px;">
+    <div class="quiz-header">
+      <div class="quiz-badge">📝 종합 기출</div>
+      <div class="quiz-title">종합 확인 문제</div>
+    </div>
+    <div class="q-item">
+      <div class="q-num">Q8 · 군무원 종합 유형</div>
+      <div class="q-text">다음 VPN 관련 설명 중 <strong>옳지 않은</strong> 것은?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>IPSec AH는 IP 프로토콜 번호 51을 사용하며 암호화 기능은 제공하지 않는다.</div>
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>IKE는 UDP 500번 포트를 사용하여 IPSec 연결의 키 교환과 SA 협상을 수행한다.</div>
+        <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>IPSec 터널 모드에서는 페이로드만 암호화되고 원본 IP 헤더는 평문으로 전송된다.</div>
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>SSL VPN은 웹 브라우저를 통해 접속할 수 있어 별도 클라이언트 소프트웨어가 필요하지 않다.</div>
+      </div>
+      <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+      <div class="q-explain">
+        <div class="ex-title">✅ 정답: ③</div>
+        <strong>터널 모드</strong>는 페이로드만이 아니라 <strong>원본 IP 헤더까지 암호화</strong>하고 새로운 IP 헤더를 붙인다. 이 덕분에 출발지·목적지 IP 주소도 은닉된다. 페이로드만 보호하는 것은 <strong>전송 모드(Transport Mode)</strong>의 특징이다.
+      </div>
+    </div>
+    <div class="q-item">
+      <div class="q-num">Q9 · 정보보호 기사 종합 유형</div>
+      <div class="q-text">VPN에서 사용되는 <strong>Diffie-Hellman(DH) 알고리즘</strong>의 목적으로 옳은 것은?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>VPN 터널을 통해 전송되는 데이터를 암호화하기 위한 알고리즘이다.</div>
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>VPN 사용자의 신원을 인증하기 위한 알고리즘이다.</div>
+        <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>공개 채널을 통해 도청자 없이 양측이 안전하게 공유 비밀 키를 협상하는 알고리즘이다.</div>
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>데이터의 무결성을 검증하기 위한 해시 알고리즘이다.</div>
+      </div>
+      <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+      <div class="q-explain">
+        <div class="ex-title">✅ 정답: ③</div>
+        <strong>Diffie-Hellman(DH)</strong>은 <strong>키 교환(Key Exchange) 알고리즘</strong>이다. 공개 채널(도청 가능)을 통해 양측이 각자의 비밀값을 공개하지 않고도 동일한 공유 세션 키를 생성한다. IPSec IKE 핸드셰이크에서 세션 암호화 키를 안전하게 협상하는 데 사용된다.
+      </div>
+    </div>
+    <div class="q-item">
+      <div class="q-num">Q10 · 군무원 종합 유형</div>
+      <div class="q-text">다음 중 VPN 프로토콜과 동작 계층의 연결이 <strong>옳지 않은</strong> 것은?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>IPSec — 네트워크 계층(L3)</div>
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>SSL VPN — 응용 계층(L7)</div>
+        <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>PPTP — 응용 계층(L7)</div>
+        <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>L2TP — 데이터 링크 계층(L2)</div>
+      </div>
+      <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+      <div class="q-explain">
+        <div class="ex-title">✅ 정답: ③</div>
+        <strong>PPTP</strong>는 응용 계층(L7)이 아닌 <strong>데이터 링크 계층(L2)</strong>에서 동작하는 프로토콜이다. PPP 프레임을 GRE로 캡슐화하여 L2 터널을 구성한다. 응용 계층에서 동작하는 VPN은 <strong>SSL VPN</strong>이다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="height:64px;"></div>
+</div>
+
+<button class="stb" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function answer(el,type){
+  const opts=el.closest('.q-options').querySelectorAll('.q-opt');
+  opts.forEach(o=>{o.classList.add('disabled');o.onclick=null;});
+  if(type==='correct'){el.classList.add('correct');el.querySelector('.opt-letter').textContent='✓';}
+  else{el.classList.add('wrong');el.querySelector('.opt-letter').textContent='✗';}
+  const btn=el.closest('.q-item').querySelector('.q-btn');
+  if(btn)btn.disabled=false;
+}
+function showExplain(btn){
+  const ex=btn.nextElementSibling;
+  ex.classList.toggle('show');
+  btn.textContent=ex.classList.contains('show')?'해설 닫기':'해설 보기';
+}
+</script>
+</body>
+</html>

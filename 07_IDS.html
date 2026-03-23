@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>침입탐지시스템(IDS) 완전 교재 | INHYUK PI</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1a2540;--accent:#2d5be3;--accent-light:#e8eeff;
+  --danger:#c0392b;--danger-light:#fdf0ef;
+  --success:#1a7a4a;--success-light:#edf7f2;
+  --warning:#b45309;--warning-light:#fffbeb;
+  --purple:#6d28d9;--purple-light:#ede9fe;
+  --border:#dde3ec;--bg:#fff;--text:#1c2331;--text-muted:#5a6478;
+  --gray-50:#f8f9fa;--gray-100:#f0f2f5;--gray-200:#e2e6ea;--gray-300:#ced4da;
+  --serif:'Noto Serif KR',serif;--sans:'Noto Sans KR',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:#eef1f8;color:var(--text);font-size:14px;line-height:1.8;}
+.wrap{max-width:900px;margin:0 auto;padding:32px 16px 80px;}
+
+/* ─ HEADER ─ */
+.doc-header{background:var(--primary);border-radius:16px 16px 0 0;padding:34px 44px 30px;position:relative;overflow:hidden;}
+.doc-header::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(45,91,227,.18);}
+.doc-header::after{content:'';position:absolute;right:70px;top:60px;width:100px;height:100px;border-radius:50%;background:rgba(45,91,227,.1);}
+.meta-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;}
+.badge-ch{background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);}
+.badge-hot{background:#c0392b;color:white;}
+.badge-ok{background:#2d5be3;color:white;}
+.h-title{font-family:var(--serif);font-size:30px;font-weight:600;color:white;letter-spacing:-.02em;margin-bottom:4px;position:relative;z-index:1;}
+.h-sub{color:rgba(255,255,255,.6);font-size:12.5px;font-weight:300;}
+.h-stats{display:flex;gap:28px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap;}
+.stat-n{font-size:20px;font-weight:700;color:#7aa2f7;}
+.stat-l{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px;}
+
+/* ─ CONTENT ─ */
+.content-card{background:var(--bg);border-radius:0 0 16px 16px;padding:40px 44px;border:1px solid var(--border);border-top:none;}
+
+/* ─ TOC ─ */
+.toc{background:var(--gray-50);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin-bottom:34px;}
+.toc-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.toc-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;}
+.toc-list li{padding:2px 0;font-size:13px;color:var(--text-muted);}
+.toc-list li::before{content:attr(data-num)'. ';font-weight:700;color:var(--primary);margin-right:4px;}
+
+/* ─ SECTION ─ */
+.sec-h{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--gray-100);}
+.sec-num{width:32px;height:32px;background:var(--primary);color:white;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.sec-title{font-size:19px;font-weight:700;color:var(--primary);letter-spacing:-.01em;}
+.sec-label{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;}
+.l-def{background:var(--accent-light);color:var(--accent);}
+.l-exam{background:var(--danger-light);color:var(--danger);}
+.l-plus{background:var(--success-light);color:var(--success);}
+.l-tip{background:var(--warning-light);color:var(--warning);}
+
+/* ─ PART DIV ─ */
+.part-div{background:var(--primary);color:white;border-radius:12px;padding:13px 20px;margin:28px 0 20px;display:flex;align-items:center;gap:12px;}
+.part-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(255,255,255,.15);padding:3px 11px;border-radius:20px;color:rgba(255,255,255,.9);}
+.part-title{font-size:15px;font-weight:700;color:white;}
+
+/* ─ DEF BOX ─ */
+.def-box{background:var(--primary);color:white;border-radius:12px;padding:20px 24px;margin-bottom:20px;position:relative;overflow:hidden;}
+.def-box::before{content:'"';position:absolute;right:16px;top:-8px;font-size:80px;color:rgba(255,255,255,.06);font-family:serif;line-height:1;}
+.def-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7aa2f7;margin-bottom:8px;}
+.def-box p{font-size:13.5px;line-height:1.9;color:rgba(255,255,255,.88);}
+.def-box strong{color:#7aa2f7;}
+
+/* ─ TABLE ─ */
+.tw{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--primary);color:white;}
+thead th{padding:11px 14px;text-align:left;font-weight:600;font-size:12px;letter-spacing:.03em;}
+tbody tr{border-bottom:1px solid var(--gray-100);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#f7f9ff;}
+tbody td{padding:10px 14px;color:var(--text);vertical-align:top;}
+tbody td:first-child{font-weight:600;color:var(--primary);}
+.tc{text-align:center;}
+
+/* ─ CARDS ─ */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0;}
+.card{border:1px solid var(--border);border-radius:10px;padding:15px 17px;background:var(--gray-50);}
+.card-t{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.card-b{font-size:13px;color:var(--text);line-height:1.7;}
+.card-b strong{color:var(--primary);}
+
+/* ─ METHOD CARDS ─ */
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;}
+.method-card{border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.method-h{padding:14px 18px;color:white;}
+.method-h .mn{font-size:11px;font-weight:700;letter-spacing:.06em;opacity:.75;margin-bottom:3px;}
+.method-h .mt{font-size:15px;font-weight:700;}
+.method-h .ms{font-size:11px;opacity:.75;margin-top:2px;}
+.method-b{padding:14px 18px;background:var(--bg);}
+.mrow{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--gray-100);font-size:12.5px;}
+.mrow:last-child{border-bottom:none;}
+.mkey{color:var(--text-muted);min-width:50px;font-size:11px;padding-top:2px;flex-shrink:0;}
+.mval{color:var(--text);flex:1;}
+.mval strong{color:var(--primary);}
+.ok{color:var(--success);font-weight:700;}
+.bad{color:var(--danger);font-weight:700;}
+
+/* ─ COMPARE ─ */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+.cc{border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.cc-h{padding:11px 17px;font-size:13.5px;font-weight:700;color:white;}
+.cc-b{padding:13px 17px;background:var(--bg);}
+.cc-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--gray-100);font-size:12.5px;}
+.cc-row:last-child{border-bottom:none;}
+.cc-k{color:var(--text-muted);min-width:55px;font-size:11px;padding-top:2px;}
+.cc-v{color:var(--text);font-weight:500;}
+
+/* ─ TRAP ─ */
+.trap{border:none;border-radius:12px;margin:16px 0;overflow:hidden;}
+.trap-h{display:flex;align-items:center;gap:8px;padding:11px 17px;background:var(--danger);color:white;}
+.trap-ht{font-size:12.5px;font-weight:700;}
+.trap-b{background:var(--danger-light);padding:16px 20px;border:1px solid #f5c6c2;border-top:none;border-radius:0 0 12px 12px;}
+.trap-b p{font-size:13px;color:#7a1c1c;line-height:1.8;margin-bottom:7px;}
+.trap-b p:last-child{margin-bottom:0;}
+.tq{background:white;border-left:3px solid var(--danger);padding:9px 13px;border-radius:0 8px 8px 0;margin:9px 0;font-size:13px;color:var(--text);font-style:italic;}
+.vd{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.wrong{background:var(--danger);color:white;}
+.right{background:var(--success);color:white;}
+
+/* ─ FP/FN BOX ─ */
+.fpfn-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;}
+.fpfn-card{border-radius:12px;overflow:hidden;border:2px solid var(--border);}
+.fpfn-h{padding:14px 18px;font-size:14px;font-weight:700;color:white;text-align:center;}
+.fpfn-b{padding:16px 18px;background:var(--bg);}
+.fpfn-b p{font-size:13px;line-height:1.8;margin-bottom:8px;}
+.fpfn-b p:last-child{margin-bottom:0;}
+.fpfn-b strong{color:var(--primary);}
+.fpfn-formula{background:var(--gray-50);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:12px;margin:8px 0;color:var(--primary);}
+
+/* ─ FLOW STEPS ─ */
+.flow{display:flex;flex-direction:column;gap:0;margin:16px 0;border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.flow-step{display:flex;align-items:flex-start;gap:16px;padding:14px 18px;border-bottom:1px solid var(--gray-100);}
+.flow-step:last-child{border-bottom:none;}
+.flow-step:nth-child(even){background:var(--gray-50);}
+.flow-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;}
+.flow-content{flex:1;}
+.flow-title{font-size:13.5px;font-weight:700;color:var(--primary);margin-bottom:3px;}
+.flow-desc{font-size:12.5px;color:var(--text-muted);line-height:1.7;}
+
+/* ─ EXAM CARD ─ */
+.exam-card{border:1px solid var(--border);border-radius:12px;margin:13px 0;overflow:hidden;}
+.exam-h{display:flex;align-items:center;justify-content:space-between;padding:10px 17px;background:var(--gray-50);border-bottom:1px solid var(--border);}
+.exam-yr{font-size:12px;font-weight:700;color:var(--primary);}
+.exam-star{color:#e8b000;font-size:12px;letter-spacing:2px;}
+.exam-body{padding:15px 17px;}
+.exam-q{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:11px;line-height:1.7;}
+.exam-opts{display:flex;flex-direction:column;gap:4px;}
+.opt{font-size:13px;padding:7px 11px;border-radius:7px;color:var(--text);border:1px solid transparent;}
+.opt-w{background:#fdf0ef;border-color:#f5c6c2;color:#7a1c1c;text-decoration:line-through;opacity:.8;}
+.opt-w::before{content:'✗ ';}
+.opt-r{background:var(--success-light);border-color:#a3dbc0;color:#0d4a2a;font-weight:600;}
+.opt-r::before{content:'✓ ';}
+.opt-n{background:var(--gray-50);border-color:var(--border);}
+.exam-exp{margin-top:11px;padding:11px 13px;background:var(--gray-50);border-radius:8px;font-size:12.5px;color:var(--text-muted);line-height:1.75;border-left:3px solid var(--accent);}
+
+/* ─ CHECKLIST ─ */
+.cl{list-style:none;margin:13px 0;display:flex;flex-direction:column;gap:6px;}
+.cl li{display:flex;align-items:flex-start;gap:9px;font-size:13px;padding:8px 13px;border-radius:8px;border:1px solid var(--border);background:var(--bg);}
+.cl-w{background:#fdf0ef;border-color:#f5c6c2;}
+.cl-w::before{content:'⚠';color:var(--danger)!important;font-size:13px;flex-shrink:0;margin-top:2px;}
+.cl-r{background:var(--success-light);border-color:#a3dbc0;}
+.cl-r::before{content:'✓';color:var(--success)!important;font-size:13px;flex-shrink:0;margin-top:2px;}
+
+/* ─ MEMORY ─ */
+.mem{background:linear-gradient(135deg,#1a2540 0%,#2d4080 100%);border-radius:14px;padding:22px 26px;color:white;margin:16px 0;position:relative;overflow:hidden;}
+.mem::before{content:'💡';position:absolute;right:18px;top:14px;font-size:42px;opacity:.15;}
+.mem-t{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7aa2f7;margin-bottom:13px;}
+.mem-items{display:flex;flex-direction:column;gap:9px;}
+.mem-item{display:flex;gap:11px;align-items:flex-start;}
+.mem-k{font-family:var(--mono);font-size:11px;font-weight:600;background:rgba(122,162,247,.2);color:#7aa2f7;padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;}
+.mem-v{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;}
+.mem-v strong{color:#7aa2f7;}
+
+/* ─ INFO ─ */
+.info{background:var(--accent-light);border:1px solid #b8ccff;border-radius:10px;padding:13px 17px;margin:13px 0;font-size:13px;color:#1a2e70;line-height:1.8;}
+.info strong{color:var(--primary);}
+
+/* ─ STAR ─ */
+.sf{color:#e8b000;}
+.exam-count{display:inline-block;background:var(--danger);color:white;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+
+/* ─ DIVIDER ─ */
+.div{height:1px;background:var(--gray-100);margin:28px 0;}
+
+/* ─ FOOTER ─ */
+.footer{display:flex;justify-content:space-between;align-items:center;margin-top:34px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);}
+
+@media(max-width:640px){
+  .content-card,.doc-header{padding:24px 20px;}
+  .method-grid,.cg,.fpfn-grid,.toc-list{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="meta-row">
+    <span class="badge badge-ch">Chapter 07 · 네트워크 정보보호</span>
+    <span class="badge badge-hot">9급 핵심</span>
+    <span class="badge badge-ok">기출 10문제 수록</span>
+  </div>
+  <div class="h-title">침입탐지시스템 (IDS) 완전 교재</div>
+  <div class="h-sub">오용탐지 · 이상탐지 · HIDS · NIDS · False Positive / Negative · IDS vs 방화벽 · 기출 전수 해설</div>
+  <div class="h-stats">
+    <div><div class="stat-n">2가지</div><div class="stat-l">탐지 기법 분류</div></div>
+    <div><div class="stat-n">2가지</div><div class="stat-l">모니터링 분류</div></div>
+    <div><div class="stat-n">10문제</div><div class="stat-l">기출 수록</div></div>
+    <div><div class="stat-n">FP/FN</div><div class="stat-l">핵심 함정</div></div>
+  </div>
+</div>
+
+<div class="content-card">
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">학습 목차</div>
+  <ul class="toc-list">
+    <li data-num="1">IDS 정의 · 방화벽과의 차이점</li>
+    <li data-num="2">탐지 기법 분류 — 오용탐지 vs 이상탐지</li>
+    <li data-num="3">오탐(FP) / 미탐(FN) 완전 정리</li>
+    <li data-num="4">모니터링 분류 — HIDS vs NIDS</li>
+    <li data-num="5">HIDS / NIDS 비교표 + 함정</li>
+    <li data-num="6">IDS 구성 3단계</li>
+    <li data-num="7">IDS vs 방화벽 vs IPS 비교</li>
+    <li data-num="8">기출문제 전수 해설 (10문제)</li>
+    <li data-num="9">암기 카드 + 체크리스트</li>
+    <li data-num="10">빈출 우선순위 표</li>
+  </ul>
+</div>
+
+<!-- SECTION 1: 정의 -->
+<div class="sec-h"><div class="sec-num">1</div><div class="sec-title">IDS 정의 및 방화벽과의 차이점</div><span class="sec-label l-def">Definition</span></div>
+
+<div class="def-box">
+  <div class="def-lbl">공식 정의</div>
+  <p>침입탐지시스템(IDS: Intrusion Detection System)은 네트워크 또는 시스템에 대한 <strong>불법 침입 행위를 실시간으로 감지·분석하여 관리자에게 경보를 발생</strong>시키는 시스템이다. 방화벽과 달리 <strong>패킷을 차단하지 않고 탐지·알림</strong>에 집중한다. 방화벽과 상호 보완적으로 운용한다.</p>
+</div>
+
+<div class="cg">
+  <div class="cc">
+    <div class="cc-h" style="background:#1a7a4a;">IDS 탐지 가능한 공격</div>
+    <div class="cc-b">
+      <div class="cc-row"><span class="cc-k">스캐닝</span><span class="cc-v">취약점 찾기 위한 수동적 공격</span></div>
+      <div class="cc-row"><span class="cc-k">DoS</span><span class="cc-v">서비스 가용성 해치는 공격</span></div>
+      <div class="cc-row"><span class="cc-k">침투</span><span class="cc-v">버퍼 오버플로 등 시스템 권한 획득</span></div>
+      <div class="cc-row"><span class="cc-k">내부자</span><span class="cc-v">내부 사용자의 비정상 행위 탐지</span></div>
+    </div>
+  </div>
+  <div class="cc">
+    <div class="cc-h" style="background:#c0392b;">IDS vs 방화벽 핵심 차이</div>
+    <div class="cc-b">
+      <div class="cc-row"><span class="cc-k">역할</span><span class="cc-v">방화벽=<strong>차단</strong> / IDS=<strong>탐지(경보)</strong></span></div>
+      <div class="cc-row"><span class="cc-k">위치</span><span class="cc-v">방화벽=경계 / IDS=사용자 네트워크 내부</span></div>
+      <div class="cc-row"><span class="cc-k">정책</span><span class="cc-v">방화벽=허용만 허용 / IDS=명백히 나쁜 것만 금지</span></div>
+      <div class="cc-row"><span class="cc-k">차단</span><span class="cc-v">방화벽=차단 / IDS=<strong>차단 불가</strong> (탐지만)</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">"IDS는 공격을 사전에 예방하고 차단할 수 있다" → ✗ 오답 (2018 경찰)</span></div>
+  <div class="trap-b">
+    <div class="tq">"IDS를 이용하면 공격 시도를 사전에 예방하고 차단할 수 있다" → <span class="vd wrong">✗ 오답</span></div>
+    <p>IDS는 <strong>탐지(Detection)와 경보(Alert)</strong>가 목적이지 차단이 목적이 아니다. 차단 기능을 추가한 것이 <strong>IPS(침입방지시스템)</strong>이다. IDS 자체는 패킷을 차단하지 않는다.</p>
+    <div class="tq">"침입탐지시스템은 패킷을 차단하며, DMZ에서만 설치가 가능하다" → <span class="vd wrong">✗ 오답</span> (2020 경찰)</div>
+    <p>IDS는 패킷을 차단하지 않으며, 방화벽 앞/뒤, 내부망, 백본 등 다양한 위치에 설치 가능하다.</p>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 2: 탐지 기법 분류 -->
+<div class="sec-h"><div class="sec-num">2</div><div class="sec-title">탐지 기법 분류 — 오용탐지 vs 이상탐지</div><span class="sec-label l-exam">★★★ 최빈출</span></div>
+
+<div class="part-div"><span class="part-tag">분류 기준 1</span><span class="part-title">탐지 기법(분석 방법)에 따른 분류</span></div>
+
+<div class="method-grid">
+  <div class="method-card">
+    <div class="method-h" style="background:#1a2540;">
+      <div class="mn">탐지 기법 ①</div>
+      <div class="mt">오용 탐지 (Misuse Detection)</div>
+      <div class="ms">= 시그니처 기반 / 지식 기반</div>
+    </div>
+    <div class="method-b">
+      <div class="mrow"><span class="mkey">정의</span><span class="mval">이미 알려진 공격 패턴(시그니처)을 미리 DB에 저장해두고, 해당 패턴이 탐지되면 침입으로 판단</span></div>
+      <div class="mrow"><span class="mkey">다른 이름</span><span class="mval"><strong>시그니처 기반 탐지, 지식 기반 탐지, 패턴 매칭</strong></span></div>
+      <div class="mrow"><span class="mkey">오탐률(FP)</span><span class="mval"><span class="ok">낮음</span> — 알려진 패턴만 탐지하므로</span></div>
+      <div class="mrow"><span class="mkey">장점</span><span class="mval">구현 쉬움. 속도 빠름. False Positive 낮음</span></div>
+      <div class="mrow"><span class="mkey">단점</span><span class="mval"><strong>새로운(Zero-day) 공격 탐지 불가</strong>. DB 지속 업데이트 필요</span></div>
+      <div class="mrow"><span class="mkey">기법 예시</span><span class="mval">조건부 확률, 전문가 시스템, 상태 천이 분석, 패턴 매칭, 키스트로크 모니터링</span></div>
+    </div>
+  </div>
+  <div class="method-card">
+    <div class="method-h" style="background:#6d28d9;">
+      <div class="mn">탐지 기법 ②</div>
+      <div class="mt">이상 탐지 (Anomaly Detection)</div>
+      <div class="ms">= 비정상 탐지 / 통계 기반</div>
+    </div>
+    <div class="method-b">
+      <div class="mrow"><span class="mkey">정의</span><span class="mval">정상적인 활동 프로파일을 생성하고, 이와 통계적으로 크게 벗어나는 행위를 침입으로 판단</span></div>
+      <div class="mrow"><span class="mkey">다른 이름</span><span class="mval"><strong>비정상 탐지, 통계적 탐지, 행위 기반 탐지</strong></span></div>
+      <div class="mrow"><span class="mkey">오탐률(FP)</span><span class="mval"><span class="bad">높음</span> — 정상 행위도 비정상으로 오판 가능</span></div>
+      <div class="mrow"><span class="mkey">장점</span><span class="mval"><strong>알려지지 않은 새로운 공격 탐지 가능</strong> (Zero-day 대응)</span></div>
+      <div class="mrow"><span class="mkey">단점</span><span class="mval">False Positive(오탐) 높음. 임계치 설정 어려움</span></div>
+      <div class="mrow"><span class="mkey">기법 예시</span><span class="mval">통계적 분석, 특성 추출, 예측 가능한 패턴 생성, 신경망(Neural Network)</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="tw"><table>
+  <thead><tr><th>구분</th><th>오용 탐지 (Misuse)</th><th>이상 탐지 (Anomaly)</th></tr></thead>
+  <tbody>
+    <tr><td>다른 이름</td><td>시그니처 기반 / 지식 기반</td><td>비정상 탐지 / 통계 기반</td></tr>
+    <tr><td>탐지 방법</td><td>알려진 패턴과 매칭</td><td>정상 프로파일과 비교</td></tr>
+    <tr><td>오탐률(FP)</td><td><span style="color:var(--success);font-weight:700;">낮음</span></td><td><span style="color:var(--danger);font-weight:700;">높음</span></td></tr>
+    <tr><td>미탐률(FN)</td><td><span style="color:var(--danger);font-weight:700;">높음</span> (새 공격 탐지 못함)</td><td><span style="color:var(--success);font-weight:700;">낮음</span></td></tr>
+    <tr><td>새 공격 탐지</td><td><span style="color:var(--danger);font-weight:700;">불가 ✗</span></td><td><span style="color:var(--success);font-weight:700;">가능 ✓</span></td></tr>
+    <tr><td>속도</td><td>빠름</td><td>느림 (학습 필요)</td></tr>
+    <tr><td>임계치 설정</td><td>쉬움</td><td><strong>어려움</strong> ★ 시험 출제</td></tr>
+    <tr><td>DB 업데이트</td><td>필요 (새 패턴 지속 추가)</td><td>불필요 (자동 학습)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">오용탐지 함정 — "임계치 설정이 어렵다" (2018 해경)</span></div>
+  <div class="trap-b">
+    <p>2018 해경 기출: "IDS 공격탐지 방법 중 오용탐지에 대한 설명으로 가장 틀린 것은?"</p>
+    <div class="tq">④ "정상인지, 비정상인지 결정하는 임계치 설정이 어렵다" → <span class="vd wrong">✗ 오답</span></div>
+    <p>임계치 설정이 어려운 것은 <strong>이상 탐지</strong>의 단점이다. 오용 탐지는 알려진 패턴과 매칭하는 방식이므로 임계치 개념이 없거나 설정이 상대적으로 쉽다.</p>
+  </div>
+</div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">이상탐지 함정 — "낮은 오탐률" (2022 국가직 7급)</span></div>
+  <div class="trap-b">
+    <div class="tq">"비정상행위(Anomaly) 침입탐지는 오용(Misuse) 침입탐지 대비 낮은 오탐률을 보이지만 알려지지 않은 새로운 공격에 취약하다" → <span class="vd wrong">✗ 오답</span></div>
+    <p>이상 탐지는 오용 탐지보다 <strong>오탐률(FP)이 높다</strong>. 낮은 오탐률은 오용 탐지의 특성이다. 또한 새로운 공격 탐지는 이상 탐지가 가능(장점)하고 오용 탐지가 취약(단점)하다. 이 선지는 두 가지가 모두 반대로 서술됨.</p>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 3: FP / FN -->
+<div class="sec-h"><div class="sec-num">3</div><div class="sec-title">오탐(False Positive) / 미탐(False Negative)</div><span class="sec-label l-exam">★★★ 기출 단골</span></div>
+
+<div class="fpfn-grid">
+  <div class="fpfn-card">
+    <div class="fpfn-h" style="background:#c0392b;">오탐 — False Positive (FP)</div>
+    <div class="fpfn-b">
+      <p><strong>= 긍정 오류 = 과탐지</strong></p>
+      <div class="fpfn-formula">실제 = 정상 → 시스템 판단 = 공격</div>
+      <p><strong>합법적 사용자를 침입자로 오판</strong><br>정상 트래픽을 공격으로 탐지<br>"공격이 아닌데 공격이라고 판단"</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">이상 탐지에서 높게 나타남</p>
+    </div>
+  </div>
+  <div class="fpfn-card">
+    <div class="fpfn-h" style="background:#374151;">미탐 — False Negative (FN)</div>
+    <div class="fpfn-b">
+      <p><strong>= 부정 오류 = 미탐지</strong></p>
+      <div class="fpfn-formula">실제 = 공격 → 시스템 판단 = 정상</div>
+      <p><strong>침입자를 합법적 사용자로 오판</strong><br>실제 공격을 탐지하지 못함<br>"공격인데 공격이 아니라고 판단"</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">오용 탐지에서 새 공격 시 높게 나타남</p>
+    </div>
+  </div>
+</div>
+
+<div class="tw"><table>
+  <thead><tr><th>구분</th><th>False Positive (FP, 오탐)</th><th>False Negative (FN, 미탐)</th></tr></thead>
+  <tbody>
+    <tr><td>다른 이름</td><td>긍정 오류, 과탐지</td><td>부정 오류, 미탐지</td></tr>
+    <tr><td>실제 상황</td><td>공격이 <strong>아닌</strong> 정상 상황</td><td>실제 <strong>공격</strong> 상황</td></tr>
+    <tr><td>시스템 판단</td><td>"<strong>공격</strong>"으로 오판</td><td>"<strong>정상</strong>"으로 오판</td></tr>
+    <tr><td>결과</td><td>합법 사용자를 침입자로 차단</td><td>실제 침입을 탐지하지 못함</td></tr>
+    <tr><td>영향</td><td>서비스 장애, 사용자 불편</td><td>보안 사고 발생</td></tr>
+    <tr><td>어느 탐지에서 높음</td><td>이상 탐지(Anomaly)</td><td>오용 탐지(Misuse) — 새 공격 시</td></tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">FP/FN 혼동 함정 — 가장 자주 출제</span></div>
+  <div class="trap-b">
+    <p>2018 해경 기출: "IDS 탐지기능에서 False Negative의 의미로 가장 올바른 것은?"</p>
+    <div class="tq">② false(-)로 표현되고, <strong>공격인데도 공격이 아니라고 오판</strong> → <span class="vd right">✓ 정답</span></div>
+    <p>헷갈리는 선지:</p>
+    <div class="tq">① false(+)로 표현되고, 공격이 아닌데도 공격이라고 오판 → <span class="vd wrong">✗ 이것은 False Positive</span></div>
+    <p>2017 지방직: "오용탐지기법은 상대적으로 ( )가 높고... 이상탐지기법은 ( )가 높다"<br>→ 오용탐지 = <strong>False Negative</strong> 높음 / 이상탐지 = <strong>False Positive</strong> 높음</p>
+  </div>
+</div>
+
+<div class="info">
+  <strong>핵심 트레이드오프:</strong> 침입자 탐지 기준을 느슨하게 하면 → False Positive(오탐) 증가, False Negative(미탐) 감소. 기준을 엄격하게 하면 → False Negative 증가, 탐지 못하는 공격 증가. 두 오류는 반비례 관계.
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 4: HIDS vs NIDS -->
+<div class="sec-h"><div class="sec-num">4</div><div class="sec-title">모니터링 대상 분류 — HIDS vs NIDS</div><span class="sec-label l-exam">★★★</span></div>
+
+<div class="part-div"><span class="part-tag">분류 기준 2</span><span class="part-title">모니터링 대상(설치 위치)에 따른 분류</span></div>
+
+<div class="method-grid">
+  <div class="method-card">
+    <div class="method-h" style="background:#1a7a4a;">
+      <div class="mn">모니터링 분류 ①</div>
+      <div class="mt">호스트 기반 IDS (HIDS)</div>
+      <div class="ms">Host-based IDS</div>
+    </div>
+    <div class="method-b">
+      <div class="mrow"><span class="mkey">설치</span><span class="mval">개별 <strong>호스트(서버/PC)</strong>에 각각 설치</span></div>
+      <div class="mrow"><span class="mkey">탐지 대상</span><span class="mval">시스템 로그, 감사 기록, 시스템 자원 사용</span></div>
+      <div class="mrow"><span class="mkey">탐지 가능</span><span class="mval"><strong>트로이 목마, 백도어, 루트킷, 내부자 공격</strong></span></div>
+      <div class="mrow"><span class="mkey">무결성</span><span class="mval">시스템 무결성 검사 → 비교적 정확한 탐지</span></div>
+      <div class="mrow"><span class="mkey">암호화</span><span class="mval">암호화된 트래픽도 복호화 후 탐지 가능</span></div>
+      <div class="mrow"><span class="mkey">단점</span><span class="mval">호스트마다 설치 필요 → 관리 비용 큼. 확장 어려움</span></div>
+      <div class="mrow"><span class="mkey">정보 출처</span><span class="mval">security audit log, system log, accounting information</span></div>
+    </div>
+  </div>
+  <div class="method-card">
+    <div class="method-h" style="background:#0369a1;">
+      <div class="mn">모니터링 분류 ②</div>
+      <div class="mt">네트워크 기반 IDS (NIDS)</div>
+      <div class="ms">Network-based IDS</div>
+    </div>
+    <div class="method-b">
+      <div class="mrow"><span class="mkey">설치</span><span class="mval">네트워크 <strong>세그먼트(구간)</strong>에 설치</span></div>
+      <div class="mrow"><span class="mkey">탐지 대상</span><span class="mval"><strong>네트워크 상의 모든 패킷</strong> 캡처·분석</span></div>
+      <div class="mrow"><span class="mkey">범위</span><span class="mval">네트워크 전반에 대한 감시 가능</span></div>
+      <div class="mrow"><span class="mkey">장점</span><span class="mval">네트워크 세그먼트 하나로 여러 시스템 감시. 운영체제 독립적. 개발 비용 낮음</span></div>
+      <div class="mrow"><span class="mkey">암호화</span><span class="mval">암호화된 트래픽 탐지 <strong>어려움</strong></span></div>
+      <div class="mrow"><span class="mkey">단점</span><span class="mval">트래픽 크게 증가 시 성능 저하. 침입 증거 수집 어려움</span></div>
+      <div class="mrow"><span class="mkey">설치 위치</span><span class="mval">방화벽 앞(외부) / 방화벽 뒤 / 내부 네트워크</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: 비교표 + 함정 -->
+<div class="sec-h" style="margin-top:8px;"><div class="sec-num">5</div><div class="sec-title">HIDS / NIDS 비교표 + 핵심 함정</div><span class="sec-label l-exam">★★★</span></div>
+
+<div class="tw"><table>
+  <thead><tr><th>구분</th><th>HIDS (호스트 기반)</th><th>NIDS (네트워크 기반)</th></tr></thead>
+  <tbody>
+    <tr><td>설치 위치</td><td>개별 호스트에 에이전트</td><td>네트워크 세그먼트</td></tr>
+    <tr><td>탐지 정보</td><td>시스템 로그·감사 기록·자원 사용</td><td><strong>네트워크 패킷 전체</strong></td></tr>
+    <tr><td>내부자 탐지</td><td><span style="color:var(--success);font-weight:700;">가능 ✓</span></td><td><span style="color:var(--danger);font-weight:700;">어려움</span></td></tr>
+    <tr><td>암호화 트래픽</td><td><span style="color:var(--success);font-weight:700;">탐지 가능</span> (복호화 후)</td><td><span style="color:var(--danger);font-weight:700;">탐지 어려움</span></td></tr>
+    <tr><td>네트워크 부하</td><td>낮음</td><td>트래픽 증가 시 높음</td></tr>
+    <tr><td>관리 비용</td><td>호스트마다 설치 → <strong>높음</strong></td><td>세그먼트 하나로 → <strong>낮음</strong></td></tr>
+    <tr><td>OS 독립성</td><td>OS에 종속</td><td><strong>OS 독립적</strong></td></tr>
+    <tr><td>탐지 가능 공격</td><td>트로이목마·백도어·루트킷·내부자</td><td>외부 네트워크 공격</td></tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">HIDS 함정 — "네트워크 패킷을 수집하여 공격 판단" (2021 국가직)</span></div>
+  <div class="trap-b">
+    <p>2021 국가직 기출: "IDS에 대한 설명으로 옳지 않은 것은?"</p>
+    <div class="tq">④ "호스트기반 침입탐지시스템은 시스템의 로그에 대한 탐지보다는 <strong>네트워크 패킷을 수집하여 공격을 판단한다</strong>" → <span class="vd wrong">✗ 오답</span></div>
+    <p>HIDS는 시스템 로그, 감사 기록, 자원 사용 정보를 분석하는 것이지 네트워크 패킷 수집은 <strong>NIDS</strong>의 특성이다.</p>
+  </div>
+</div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">NIDS 오탐지/이상탐지 설명 매칭 — 최빈출 빈칸 문제</span></div>
+  <div class="trap-b">
+    <p>2016 국가직, 2020 해경 동일 유형 출제:</p>
+    <div class="tq">( ) 기법은 이미 알려진 공격 패턴을 근거로 침입을 탐지<br>( ) 기법은 정상적인 활동 프로파일과 비교하여 벗어나는 행위를 탐지<br>( ) IDS는 네트워크 상의 모든 패킷을 캡처한 후 분석하는 시스템</div>
+    <p>정답: <strong>오용탐지 / 이상탐지 / 네트워크 기반(NIDS)</strong></p>
+    <p>→ 선지 ③이 항상 정답 (오용탐지, 이상탐지, 네트워크기반 순서)</p>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 6: IDS 구성 -->
+<div class="sec-h"><div class="sec-num">6</div><div class="sec-title">IDS 구성 3단계</div><span class="sec-label l-def">Process</span></div>
+
+<div class="flow">
+  <div class="flow-step">
+    <div class="flow-num" style="background:#1a2540;">1</div>
+    <div class="flow-content">
+      <div class="flow-title">정보 수집부 (Data Collection)</div>
+      <div class="flow-desc">감사 데이터(Raw Data) 수집. 시스템 로그, 네트워크 패킷, 파일 시스템 상태 등 다양한 정보 수집.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num" style="background:#2d5be3;">2</div>
+    <div class="flow-content">
+      <div class="flow-title">정보 분석부 — 3단계</div>
+      <div class="flow-desc">
+        <strong>① 정보 가공·축약</strong> (Data Reduction & Filtering): 수집된 정보를 패턴에 의해 분류·정제<br>
+        <strong>② 분석·침입탐지</strong> (Analysis & Intrusion Detection): 가공된 데이터로 침입 여부 판단<br>
+        <strong>③ 보고·조치</strong> (Reporting & Response): 침입 발생 시 관리자에게 경고
+      </div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num" style="background:#1a7a4a;">3</div>
+    <div class="flow-content">
+      <div class="flow-title">관리부 (Management)</div>
+      <div class="flow-desc">분석 결과에 대한 통제·관리. 보안 정책 수립. IDS 시스템 전체 관리·운용.</div>
+    </div>
+  </div>
+</div>
+
+<div class="info">
+  <strong>IDS 주요 기능:</strong> 시스템 모니터링·분석 / 시스템 감사 기록 / 중요 데이터 무결성 평가 / 알려진 공격 패턴 인식 / 비정상 행위 통계 분석 / 운영체제 감사 추적 관리
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 7: IDS vs 방화벽 vs IPS -->
+<div class="sec-h"><div class="sec-num">7</div><div class="sec-title">IDS vs 방화벽 vs IPS 비교</div><span class="sec-label l-def">3자 비교</span></div>
+
+<div class="tw"><table>
+  <thead><tr><th>구분</th><th>방화벽 (Firewall)</th><th>IDS (침입탐지)</th><th>IPS (침입방지)</th></tr></thead>
+  <tbody>
+    <tr><td>주요 역할</td><td><strong>차단</strong></td><td><strong>탐지(경보)</strong></td><td><strong>탐지 + 차단</strong></td></tr>
+    <tr><td>동작 방식</td><td>수동 (passive)</td><td>수동 (passive)</td><td>능동 (active)</td></tr>
+    <tr><td>패킷 차단</td><td><span style="color:var(--success);font-weight:700;">가능</span></td><td><span style="color:var(--danger);font-weight:700;">불가</span></td><td><span style="color:var(--success);font-weight:700;">가능</span></td></tr>
+    <tr><td>패킷 분석</td><td>헤더(IP·포트) 기반</td><td>헤더+<strong>내용(Payload)</strong></td><td>헤더+내용</td></tr>
+    <tr><td>탐지 영역</td><td>네트워크·전송층(IP·포트)</td><td>응용층까지 전체</td><td>네트워크층+전송층</td></tr>
+    <tr><td>설계 정책</td><td>허용할 것만 허용</td><td>명백한 공격만 탐지</td><td>알려진 공격 차단</td></tr>
+    <tr><td>네트워크 부하</td><td>있음</td><td>낮음</td><td>있음</td></tr>
+    <tr><td>내부 공격</td><td>방어 어려움</td><td>탐지 가능(HIDS)</td><td>부분 가능</td></tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">IPS 탐지 영역 함정 (2022 군무원 9급)</span></div>
+  <div class="trap-b">
+    <p>2022 군무원: "침입방지시스템(IPS)에 대한 설명으로 가장 옳지 않은 것은?"</p>
+    <div class="tq">② "탐지영역은 네트워크 계층과 전송계층이다" → <span class="vd wrong">✗ 오답</span></div>
+    <p>IPS는 방화벽이 검사할 수 없는 <strong>전송계층 상단의 응용 계층 데이터까지도 검사 가능</strong>하다. 단순히 네트워크·전송층만이 아니다. (2021 해경 참조)</p>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 8: 기출문제 -->
+<div class="sec-h"><div class="sec-num">8</div><div class="sec-title">기출문제 전수 해설 <span class="exam-count">10문제</span></div><span class="sec-label l-exam">연도순</span></div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2016 국가직 9급 · 네트워크보안 문2 — 탐지기법 + NIDS 매칭</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">㉠ ~ ㉢에 들어갈 용어를 바르게 연결한 것은?<br>○ ( ㉠ ) 기법은 이미 알려진 공격 패턴을 근거로 침입을 탐지<br>○ ( ㉡ ) 기법은 정상적인 활동 프로파일과 비교하여 벗어나는 행위를 탐지<br>○ ( ㉢ ) IDS는 네트워크 상의 모든 패킷을 캡처링한 후 분석하여 탐지</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① 이상탐지 / 오용탐지 / 네트워크 기반</div>
+      <div class="opt opt-w">② 이상탐지 / 오용탐지 / 호스트 기반</div>
+      <div class="opt opt-r">③ 오용탐지 / 이상탐지 / 네트워크 기반</div>
+      <div class="opt opt-w">④ 오용탐지 / 이상탐지 / 호스트 기반</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ③</strong> — 알려진 패턴 매칭=<strong>오용탐지</strong>. 정상 프로파일 비교=<strong>이상탐지</strong>. 패킷 전체 캡처·분석=<strong>네트워크 기반(NIDS)</strong>. 이 3개 매칭이 핵심이며 2020 해경에서도 동일 유형 출제됨.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2017 지방직 9급 · 정보보호론 문19 — 오탐/미탐 빈칸</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">침입 탐지 시스템의 탐지분석 기법에 대한 설명이다. ㉠~㉣에 들어갈 내용이 바르게 연결된 것은?<br><br>( ㉠ )은 알려진 공격 패턴을 미리 입력해두었다가 해당 패턴이 탐지되면 알려주는 것이다. 상대적으로 ( ㉡ )가 높고, 새로운 공격 탐지에 부적합하다. ( ㉢ )은 정상·평균 상태를 기준으로 급격한 변화나 확률 낮은 일이 발생하면 탐지로 알려준다. 상대적으로 ( ㉣ )가 높다.</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① 이상탐지기법 / False Positive / 오용탐지기법 / False Negative</div>
+      <div class="opt opt-w">② 이상탐지기법 / False Negative / 오용탐지기법 / False Positive</div>
+      <div class="opt opt-r">③ 오용탐지기법 / False Negative / 이상탐지기법 / False Positive</div>
+      <div class="opt opt-w">④ 오용탐지기법 / False Positive / 이상탐지기법 / False Negative</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ③</strong> — 오용탐지 = FN 높음(새 공격 탐지 못함). 이상탐지 = FP 높음(정상을 공격으로 오판). ㉠=오용탐지, ㉡=FN, ㉢=이상탐지, ㉣=FP.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2018 해경 9급 — False Negative 의미</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IDS 탐지기능에서 False Negative의 의미로 가장 올바른 것은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① false(+)로 표현되고, 공격이 아닌데도 공격이라고 오판</div>
+      <div class="opt opt-r">② false(-)로 표현되고, 공격인데도 공격이 아니라고 오판</div>
+      <div class="opt opt-w">③ false(+)로 표현되고, 공격인데도 공격이 아니라고 오판</div>
+      <div class="opt opt-w">④ false(-)로 표현되고, 공격이 아닌데도 공격이라고 오판</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ②</strong> — False Negative(미탐) = false(-) = 실제 공격인데 공격이 아니라고 오판. False Positive(오탐) = false(+) = 정상인데 공격이라고 오판. 2020 경찰에도 같은 내용 출제.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2018 해경 9급 — 오용탐지 설명 오답</span><span class="exam-star">★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IDS 공격탐지 방법 중 오용탐지에 대한 설명으로 가장 <u>틀린 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① 시그니처 기반으로 동작한다.</div>
+      <div class="opt opt-n">② 속도가 빠르며, 구현이 쉽다.</div>
+      <div class="opt opt-n">③ 이미 정립된 공격패턴을 미리 입력하고 매칭하여 침입을 판단한다.</div>
+      <div class="opt opt-w">④ 정상인지, 비정상인지 결정하는 임계치 설정이 어렵다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ④</strong> — 임계치 설정이 어려운 것은 <strong>이상 탐지(Anomaly Detection)</strong>의 단점. 오용 탐지는 알려진 패턴과 매칭하므로 임계치 개념이 다름. ①②③은 모두 오용탐지의 옳은 설명.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2018 경찰공무원 · 시스템네트워크보안 문6 — IDS 차단 불가</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">침입탐지시스템(IDS)에 대한 설명으로 가장 적절하지 않은 것은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① 알려지지 않은 공격 행위도 이상탐지(Anomaly detection) 방식을 이용하여 탐지할 수 있다.</div>
+      <div class="opt opt-n">② IDS는 방화벽과 상호 보완적으로 사용될 수 있다.</div>
+      <div class="opt opt-n">③ 기존의 공격 패턴을 분석하여 침입을 탐지하는 오용탐지(Misuse detection) 방식을 사용할 수 있다.</div>
+      <div class="opt opt-w">④ IDS를 이용하면 공격 시도를 사전에 예방하고 차단할 수 있다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ④</strong> — IDS는 <strong>탐지·경보</strong>가 목적. <strong>차단·예방은 IPS(침입방지시스템)</strong>의 역할. IDS는 패킷 차단 기능 없음.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2020 해경 9급 — 이상/오용/NIDS 매칭</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">㉠~㉢에 들어갈 용어를 바르게 연결한 것은?<br>· ( ㉠ ) 기법은 정상적인 활동 데이터베이스와 비교하여 침입을 구분<br>· ( ㉡ ) 기법은 공격패턴·시그니처 데이터베이스와 비교하여 침입을 구분<br>· ( ㉢ ) IDS는 네트워크 상의 모든 패킷을 캡처한 후 분석하여 탐지</div>
+    <div class="exam-opts">
+      <div class="opt opt-r">① 이상탐지 / 오용탐지 / 네트워크 기반</div>
+      <div class="opt opt-w">② 이상탐지 / 오용탐지 / 호스트 기반</div>
+      <div class="opt opt-w">③ 오용탐지 / 이상탐지 / 네트워크 기반</div>
+      <div class="opt opt-w">④ 오용탐지 / 이상탐지 / 호스트 기반</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ①</strong> — 2016 국가직과 동일 유형이지만 ①②순서가 반대로 바뀜. 정상 활동DB 비교=<strong>이상탐지</strong>. 공격패턴·시그니처DB 비교=<strong>오용탐지</strong>. 패킷 전체 캡처=<strong>NIDS</strong>.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2020 경찰공무원 · 정보보호론 문20 — IDS 설명 오답</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">침입탐지시스템(Intrusion Detection System)에서 가장 적절하지 않은 것은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① 합법적 사용자를 침입자로 판단하는 긍정오류(False Positive)가 발생할 수 있다.</div>
+      <div class="opt opt-n">② 침입자를 합법적 사용자로 판단하는 부정오류(False Negative)가 발생할 수 있다.</div>
+      <div class="opt opt-n">③ IDS는 데이터 수집원에 따라 네트워크 기반과 호스트 기반 등으로 분류한다.</div>
+      <div class="opt opt-w">④ IDS는 패킷을 차단하며, DMZ(DeMilitarized Zone)에서만 설치가 가능하다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ④</strong> — IDS는 패킷을 <strong>차단하지 않는다</strong>(탐지만). DMZ에서만 설치 가능하지 않다. 방화벽 앞/뒤, 내부망, 백본 등 다양한 위치에 설치 가능.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2021 국가직 9급 · 네트워크보안 문18 — HIDS 오답</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IDS(Intrusion Detection System)에 대한 설명으로 <u>옳지 않은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① IDS는 네트워크기반 및 호스트기반의 침입탐지시스템으로 분류할 수 있다.</div>
+      <div class="opt opt-n">② 침입탐지 기법 중 오용탐지기법은 시그니처기반 탐지 또는 지식기반 탐지로 불린다.</div>
+      <div class="opt opt-n">③ 네트워크기반 침입탐지시스템은 네트워크 전반에 대한 감시를 할 수 있다.</div>
+      <div class="opt opt-w">④ 호스트기반 침입탐지시스템은 시스템의 로그에 대한 탐지보다는 <u>네트워크 패킷을 수집하여 공격을 판단한다</u>.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ④</strong> — HIDS는 <strong>시스템 로그, 감사 기록, 자원 사용</strong>을 분석. 네트워크 패킷 수집은 <strong>NIDS</strong>의 특성. HIDS와 NIDS의 정보 출처가 반대로 서술된 전형적 함정.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2022 국가직 7급 · 정보보호론 문17 — 이상탐지 오탐률</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IDS(Intrusion Detection System)에 대한 설명으로 <u>옳지 않은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① 비정상행위(Anomaly) 침입탐지는 오용(Misuse) 침입탐지 대비 <u>낮은 오탐률을 보이지만</u> 알려지지 않은 새로운 공격에 취약하다.</div>
+      <div class="opt opt-n">② 호스트 기반 IDS는 트로이목마, 백도어, 내부자에 의한 공격을 탐지할 수 있다.</div>
+      <div class="opt opt-n">③ 네트워크 기반 IDS를 방화벽 외부에 설치할 경우, 내부에 설치할 때보다 더 많은 네트워크 공격을 탐지할 수 있지만 처리할 데이터가 더 많다.</div>
+      <div class="opt opt-n">④ IDS 설계 시 침입자의 행동을 엄격하게 정의할수록 공격탐지의 부정오류(False Negative)가 증가한다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ①</strong> — 이상탐지(Anomaly)는 오용탐지보다 <strong>오탐률(FP) 높음</strong>. "낮은 오탐률"은 오용탐지의 특성. 또한 새로운 공격 탐지는 이상탐지의 <strong>장점</strong>이지 취약점이 아님. 두 가지 내용이 모두 반대로 서술됨.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2023 군무원 9급 · 네트워크보안 — IDS 지식기반 탐지</span><span class="exam-star">★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">다음 IDS의 탐지 유형 중 지식기반 탐지 기법에 <u>해당하지 않는 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① 전문가 시스템 (Expert System)</div>
+      <div class="opt opt-n">② 시그니처 분석 (Signature-based Detection)</div>
+      <div class="opt opt-n">③ 페트리넷 (Petri-nets)</div>
+      <div class="opt opt-w">④ 통계적 분석</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ④</strong> — 지식 기반 탐지 = 오용탐지. 오용탐지 기법: 전문가 시스템, 시그니처 분석, 패턴 매칭, 페트리넷, 상태 천이 분석. <strong>통계적 분석</strong>은 <strong>이상 탐지(Anomaly Detection)</strong>의 기법이다.</div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SECTION 9: 암기 카드 -->
+<div class="sec-h"><div class="sec-num">9</div><div class="sec-title">암기 카드 + 최종 체크리스트</div><span class="sec-label l-tip">시험 직전</span></div>
+
+<div class="mem">
+  <div class="mem-t">💡 IDS 핵심 암기 카드</div>
+  <div class="mem-items">
+    <div class="mem-item"><span class="mem-k">오용탐지</span><span class="mem-v">시그니처/지식 기반. <strong>FP 낮고 FN 높음</strong>. 새 공격 탐지 불가. 임계치 쉬움.</span></div>
+    <div class="mem-item"><span class="mem-k">이상탐지</span><span class="mem-v">통계/비정상 기반. <strong>FP 높고 FN 낮음</strong>. 새 공격 탐지 가능. 임계치 어려움.</span></div>
+    <div class="mem-item"><span class="mem-k">FP (오탐)</span><span class="mem-v"><strong>정상 → 공격으로 오판</strong>. 합법 사용자를 침입자로. 이상탐지에서 높음.</span></div>
+    <div class="mem-item"><span class="mem-k">FN (미탐)</span><span class="mem-v"><strong>공격 → 정상으로 오판</strong>. 침입자를 합법 사용자로. 오용탐지(새 공격)에서 높음.</span></div>
+    <div class="mem-item"><span class="mem-k">HIDS</span><span class="mem-v">개별 호스트 설치. 로그·감사기록 분석. 내부자·백도어 탐지 가능.</span></div>
+    <div class="mem-item"><span class="mem-k">NIDS</span><span class="mem-v">네트워크 패킷 전체 캡처. 세그먼트 하나로 다수 감시. OS 독립적.</span></div>
+    <div class="mem-item"><span class="mem-k">IDS 차단</span><span class="mem-v">IDS는 <strong>차단 불가</strong>. 탐지+경보만. 차단 = IPS(침입방지시스템)</span></div>
+    <div class="mem-item"><span class="mem-k">지식기반</span><span class="mem-v">전문가시스템·시그니처·페트리넷·패턴매칭 = 오용탐지. 통계적 분석 = 이상탐지</span></div>
+  </div>
+</div>
+
+<ul class="cl">
+  <li class="cl-w">"IDS는 공격을 사전에 예방하고 차단할 수 있다" → ✗ (탐지·경보만, 차단 불가)</li>
+  <li class="cl-w">"IDS는 DMZ에서만 설치 가능" → ✗ (다양한 위치 설치 가능)</li>
+  <li class="cl-w">"오용탐지는 임계치 설정이 어렵다" → ✗ (이상탐지의 단점)</li>
+  <li class="cl-w">"이상탐지는 오탐률(FP)이 낮다" → ✗ (FP 높음)</li>
+  <li class="cl-w">"HIDS는 네트워크 패킷을 수집하여 공격을 판단" → ✗ (NIDS 특성)</li>
+  <li class="cl-w">"통계적 분석은 오용탐지(지식기반) 기법이다" → ✗ (이상탐지 기법)</li>
+  <li class="cl-r">"오용탐지 = 시그니처 기반 = 지식 기반 탐지" → ✓</li>
+  <li class="cl-r">"이상탐지는 새로운(Zero-day) 공격 탐지 가능" → ✓</li>
+  <li class="cl-r">"FP(오탐) = 정상을 공격으로 판단, FN(미탐) = 공격을 정상으로 판단" → ✓</li>
+  <li class="cl-r">"HIDS는 트로이목마·백도어·루트킷·내부자 공격 탐지 가능" → ✓</li>
+  <li class="cl-r">"NIDS는 네트워크 패킷 전체 캡처·분석, OS 독립적" → ✓</li>
+</ul>
+
+<!-- SECTION 10: 우선순위표 -->
+<div class="sec-h" style="margin-top:8px;"><div class="sec-num">10</div><div class="sec-title">빈출 우선순위 표</div><span class="sec-label l-tip">시험 전략</span></div>
+<div class="tw"><table>
+  <thead><tr><th>출제 포인트</th><th>빈출도</th><th>주요 함정</th></tr></thead>
+  <tbody>
+    <tr><td>오용탐지/이상탐지 설명 매칭 빈칸</td><td><span class="sf">★★★</span></td><td>순서 바꿔 출제 (2016 국가직·2020 해경 동일 유형)</td></tr>
+    <tr><td>FP(오탐) vs FN(미탐) 정의</td><td><span class="sf">★★★</span></td><td>정상→공격(FP) vs 공격→정상(FN) 혼동</td></tr>
+    <tr><td>오용탐지/이상탐지 FP·FN 수준</td><td><span class="sf">★★★</span></td><td>이상탐지=FP 높음. 오용탐지=FN 높음 반대로 서술</td></tr>
+    <tr><td>HIDS vs NIDS 특성 구분</td><td><span class="sf">★★★</span></td><td>HIDS에 "네트워크 패킷 수집" 서술 → 오답</td></tr>
+    <tr><td>IDS 차단 기능 유무</td><td><span class="sf">★★★</span></td><td>"IDS는 차단·예방 가능" → 오답</td></tr>
+    <tr><td>지식기반 탐지 기법 종류</td><td><span class="sf">★★</span></td><td>통계적 분석이 지식기반(오용탐지) 기법이라 서술 → 오답</td></tr>
+    <tr><td>오용탐지 단점 (임계치)</td><td><span class="sf">★★</span></td><td>이상탐지 단점을 오용탐지로 교체</td></tr>
+    <tr><td>IDS 구성 3단계 순서</td><td><span class="sf">★</span></td><td>수집→분석→보고 순서 혼동</td></tr>
+    <tr><td>IPS 탐지 영역</td><td><span class="sf">★★</span></td><td>네트워크·전송층만이라고 서술 → 오답 (응용층까지)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="footer">
+  <span>정보보안 합격전략 교재 · INHYUK PI</span>
+  <span>Chapter 07 · 침입탐지시스템(IDS) · 2026 목표</span>
+</div>
+
+</div><!-- /content-card -->
+</div><!-- /wrap -->
+</body>
+</html>

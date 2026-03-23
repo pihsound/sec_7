@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>07단원 네트워크 정보보호 | INHYUK PI</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p:#1a2540;--g:#1a7a4a;
+  --bd:#dde3ec;--bg:#fff;--tx:#1c2331;--tm:#5a6478;
+  --g0:#f8f9fa;--g1:#f0f2f5;
+  --sans:'Noto Sans KR',sans-serif;--serif:'Noto Serif KR',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:#edf2ee;color:var(--tx);min-height:100vh;display:flex;flex-direction:column;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#0a1f10 0%,#1a3a28 55%,#0d3020 100%);padding:44px 24px 38px;text-align:center;position:relative;overflow:hidden;}
+.hdr::before{content:'🛡';position:absolute;left:7%;top:50%;transform:translateY(-50%);font-size:70px;opacity:.06;}
+.hdr::after{content:'🔒';position:absolute;right:7%;top:50%;transform:translateY(-50%);font-size:70px;opacity:.06;}
+.htag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(134,239,172,.15);color:#86efac;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+.htitle{font-family:var(--serif);font-size:28px;font-weight:600;color:white;letter-spacing:-.02em;margin-bottom:6px;}
+.hsub{color:rgba(255,255,255,.45);font-size:12px;}
+.hinfo{display:flex;justify-content:center;gap:32px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);}
+.hi-n{font-size:20px;font-weight:700;color:#86efac;}
+.hi-l{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+/* MAIN */
+.main{max-width:680px;margin:0 auto;padding:32px 16px 60px;flex:1;width:100%;}
+
+/* SECTION LABEL */
+.sec{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tm);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:var(--bd);}
+
+/* CARD */
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;display:flex;align-items:stretch;margin-bottom:11px;transition:transform .16s,box-shadow .16s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,122,74,.12);}
+.bar{width:5px;flex-shrink:0;}
+.body{padding:17px 20px;flex:1;}
+.num{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;}
+.title{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--p);margin-bottom:4px;}
+.desc{font-size:12px;color:var(--tm);line-height:1.65;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.tag{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:10px;}
+.arr{display:flex;align-items:center;padding:0 18px;color:#c0cce0;font-size:18px;flex-shrink:0;transition:color .16s;}
+.card:hover .arr{color:var(--g);}
+
+/* BAR + NUM COLORS */
+.c1 .bar{background:linear-gradient(180deg,#1a7a4a,#0f766e);}
+.c1 .num{color:#1a7a4a;}
+.c2 .bar{background:linear-gradient(180deg,#2d5be3,#6d28d9);}
+.c2 .num{color:#2d5be3;}
+.c3 .bar{background:linear-gradient(180deg,#c0392b,#e07b39);}
+.c3 .num{color:#c0392b;}
+.c4 .bar{background:linear-gradient(180deg,#6d28d9,#9333ea);}
+.c4 .num{color:#6d28d9;}
+.c5 .bar{background:linear-gradient(180deg,#0f766e,#2d5be3);}
+.c5 .num{color:#0f766e;}
+.c6 .bar{background:linear-gradient(180deg,#b45309,#c0392b);}
+.c6 .num{color:#b45309;}
+
+/* TAG COLORS */
+.tg{background:#edf7f2;color:#1a7a4a;}
+.tb{background:#e8eeff;color:#2d5be3;}
+.tr{background:#fdf0ef;color:#c0392b;}
+.tv{background:#ede9fe;color:#6d28d9;}
+.tt{background:#ccfbf1;color:#0f766e;}
+.tw{background:#fffbeb;color:#b45309;}
+
+/* QUICK REF */
+.quick{background:var(--bg);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-top:28px;}
+.qh{background:var(--p);padding:12px 18px;}
+.qh-t{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#86efac;}
+.qb{padding:14px 18px;display:flex;flex-direction:column;gap:9px;}
+.qr{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;}
+.qk{font-family:'JetBrains Mono','Noto Sans KR',monospace;font-size:10px;font-weight:700;background:#edf7f2;color:#1a7a4a;padding:2px 8px;border-radius:5px;white-space:nowrap;flex-shrink:0;}
+.qv{color:var(--tx);line-height:1.6;}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--tm);border-top:1px solid var(--bd);background:var(--bg);}
+@media(max-width:600px){.hinfo{gap:16px;}.htitle{font-size:22px;}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="htag">Chapter 07 · 네트워크 정보보호</div>
+  <div class="htitle">07단원 전체 학습 자료</div>
+  <div class="hsub">2026 지방직 · 군무원 · 해경 · 국회직 대비</div>
+  <div class="hinfo">
+    <div><div class="hi-n">6</div><div class="hi-l">교재 파일</div></div>
+    <div><div class="hi-n">스토리</div><div class="hi-l">탄생 배경 포함</div></div>
+    <div><div class="hi-n">기출</div><div class="hi-l">전 문항 해설</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="sec">07단원 교재 목록</div>
+
+  <!-- 1 -->
+  <a class="card c1" href="07_개요_NAT_SNMP.html">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="num">01 · 단원 개요</div>
+      <div class="title">네트워크 정보보호 개요 · NAT · SNMP</div>
+      <div class="desc">탄생 스토리 · 방화벽 개요 · DMZ 구조 · NAT 동작 원리 · SNMP NMS/Agent/MIB/SMI</div>
+      <div class="tags">
+        <span class="tag tg">탄생 스토리</span>
+        <span class="tag tb">DMZ</span>
+        <span class="tag tt">NAT</span>
+        <span class="tag tw">SNMP ★</span>
+      </div>
+    </div>
+    <div class="arr">→</div>
+  </a>
+
+  <!-- 2 -->
+  <a class="card c2" href="07_방화벽_침입차단.html">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="num">02 · 방화벽</div>
+      <div class="title">침입 차단 시스템 분류 완전 정리</div>
+      <div class="desc">패킷 필터링 · 서킷 레벨 게이트웨이 · 스테이트풀 인스펙션 · 응용 계층 게이트웨이 · 베스천 호스트 · 스크린드 서브넷</div>
+      <div class="tags">
+        <span class="tag tr">ALG=7층 ★</span>
+        <span class="tag tb">스테이트풀</span>
+        <span class="tag tv">베스천호스트</span>
+      </div>
+    </div>
+    <div class="arr">→</div>
+  </a>
+
+  <!-- 3 -->
+  <a class="card c3" href="07_IDS.html">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="num">03 · IDS</div>
+      <div class="title">침입 탐지 시스템 (IDS) 완전 교재</div>
+      <div class="desc">오용 탐지 vs 이상 탐지 · NIDS vs HIDS · Snort · 탐지 기법 상세 · 기출 전수</div>
+      <div class="tags">
+        <span class="tag tr">오용탐지 ★</span>
+        <span class="tag tv">이상탐지</span>
+        <span class="tag tg">Snort</span>
+      </div>
+    </div>
+    <div class="arr">→</div>
+  </a>
+
+  <!-- 4 -->
+  <a class="card c4" href="07_IPS_허니팟.html">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="num">04 · IPS · 허니팟</div>
+      <div class="title">침입 방지 시스템(IPS) · 허니팟</div>
+      <div class="desc">IPS 동작·배치 유형 · 허니팟 유형 · 허니넷 · 오탐/미탐(FP/FN) 매트릭스 · 방화벽·IDS·IPS·허니팟 전체 비교</div>
+      <div class="tags">
+        <span class="tag tv">IPS 인라인 ★</span>
+        <span class="tag tw">허니팟</span>
+        <span class="tag tr">FP/FN</span>
+      </div>
+    </div>
+    <div class="arr">→</div>
+  </a>
+
+  <!-- 5 -->
+  <a class="card c5" href="07_VPN.html">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="num">05 · VPN</div>
+      <div class="title">VPN 가상 사설망 완전 정리</div>
+      <div class="desc">터널링 원리 · PPTP/L2F/L2TP/IPSec/SSL VPN · AH vs ESP · 구성 방식 4가지 · 프로토콜 전체 비교표</div>
+      <div class="tags">
+        <span class="tag tt">L2TP=2층 ★</span>
+        <span class="tag tb">IPSec=3층</span>
+        <span class="tag tg">SSL VPN</span>
+      </div>
+    </div>
+    <div class="arr">→</div>
+  </a>
+
+  <!-- 6 -->
+  <a class="card c6" href="07_IPSec.html">
+    <div class="bar"></div>
+    <div class="body">
+      <div class="num">06 · IPSec</div>
+      <div class="title">IPSec 완전 교재</div>
+      <div class="desc">AH 프로토콜 · ESP 프로토콜 · 전송/터널 모드 비교 · SA · IKE · 재전송 공격 방지 · 기출 전수</div>
+      <div class="tags">
+        <span class="tag tr">AH vs ESP ★</span>
+        <span class="tag tv">터널/전송 모드</span>
+        <span class="tag tb">IKE · SA</span>
+      </div>
+    </div>
+    <div class="arr">→</div>
+  </a>
+
+  <!-- 빠른 참고 -->
+  <div class="quick">
+    <div class="qh"><div class="qh-t">⚡ 시험 직전 핵심 — 07단원 함정 TOP 6</div></div>
+    <div class="qb">
+      <div class="qr">
+        <span class="qk">방화벽 계층</span>
+        <span class="qv">ALG=응용층(7층) / 서킷레벨=세션층(5층) / 패킷필터링=3~4층</span>
+      </div>
+      <div class="qr">
+        <span class="qk">패킷필터링 불가</span>
+        <span class="qv">TCP 연결 상태 추적 불가 → 스테이트풀이 담당</span>
+      </div>
+      <div class="qr">
+        <span class="qk">IDS 탐지기법</span>
+        <span class="qv">오용탐지=시그니처·오탐↓·새공격불가 / 이상탐지=프로파일·오탐↑·새공격가능</span>
+      </div>
+      <div class="qr">
+        <span class="qk">VPN 터널 계층</span>
+        <span class="qv">PPTP·L2F·L2TP = 2계층 / IPSec = 3계층</span>
+      </div>
+      <div class="qr">
+        <span class="qk">IPSec AH vs ESP</span>
+        <span class="qv">AH=인증·무결성(암호화없음) / ESP=인증+무결성+<strong>기밀성(암호화)</strong></span>
+      </div>
+      <div class="qr">
+        <span class="qk">SNMP MIB≠SMI</span>
+        <span class="qv">MIB=객체 저장소 / SMI=객체 이름·유형·인코딩 규칙 정의</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">정보보안 합격전략 · INHYUK PI · 2026 목표</div>
+
+</body>
+</html>

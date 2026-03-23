@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>IPSec 완전 교재 | INHYUK PI</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1a2540;--accent:#2d5be3;--accent-light:#e8eeff;
+  --danger:#c0392b;--danger-light:#fdf0ef;
+  --success:#1a7a4a;--success-light:#edf7f2;
+  --warning:#b45309;--warning-light:#fffbeb;
+  --purple:#6d28d9;--purple-light:#ede9fe;
+  --teal:#0f766e;--teal-light:#ccfbf1;
+  --border:#dde3ec;--bg:#fff;--text:#1c2331;--text-muted:#5a6478;
+  --gray-50:#f8f9fa;--gray-100:#f0f2f5;--gray-200:#e2e6ea;
+  --serif:'Noto Serif KR',serif;--sans:'Noto Sans KR',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:#eef1f8;color:var(--text);font-size:14px;line-height:1.8;}
+.wrap{max-width:920px;margin:0 auto;padding:32px 16px 80px;}
+
+/* ─ HEADER ─ */
+.doc-header{background:var(--primary);border-radius:16px 16px 0 0;padding:34px 44px 30px;position:relative;overflow:hidden;}
+.doc-header::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(45,91,227,.18);}
+.doc-header::after{content:'';position:absolute;right:70px;top:60px;width:100px;height:100px;border-radius:50%;background:rgba(45,91,227,.1);}
+.meta-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;}
+.badge-ch{background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);}
+.badge-hot{background:#c0392b;color:white;}
+.badge-ok{background:#2d5be3;color:white;}
+.h-title{font-family:var(--serif);font-size:30px;font-weight:600;color:white;letter-spacing:-.02em;margin-bottom:4px;position:relative;z-index:1;}
+.h-sub{color:rgba(255,255,255,.6);font-size:12.5px;font-weight:300;}
+.h-stats{display:flex;gap:26px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap;}
+.stat-n{font-size:20px;font-weight:700;color:#7aa2f7;}
+.stat-l{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px;}
+
+/* ─ TABS ─ */
+.tab-bar{display:flex;background:var(--primary);padding:0 44px;gap:2px;flex-wrap:wrap;border-bottom:2px solid rgba(255,255,255,.08);}
+.tab-btn{padding:12px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:all .18s;white-space:nowrap;letter-spacing:.02em;}
+.tab-btn:hover{color:rgba(255,255,255,.8);}
+.tab-btn.active{color:#7aa2f7;border-bottom-color:#7aa2f7;}
+
+/* ─ CONTENT ─ */
+.content-card{background:var(--bg);border-radius:0 0 16px 16px;padding:40px 44px;border:1px solid var(--border);border-top:none;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* ─ TOC ─ */
+.toc{background:var(--gray-50);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:32px;}
+.toc-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.toc-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;}
+.toc-list li{padding:2px 0;font-size:13px;color:var(--text-muted);}
+.toc-list li::before{content:attr(data-num)'. ';font-weight:700;color:var(--primary);margin-right:4px;}
+
+/* ─ SECTION ─ */
+.sec-h{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--gray-100);margin-top:8px;}
+.sec-num{width:32px;height:32px;background:var(--primary);color:white;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.sec-title{font-size:18px;font-weight:700;color:var(--primary);}
+.sec-label{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;}
+.l-def{background:var(--accent-light);color:var(--accent);}
+.l-exam{background:var(--danger-light);color:var(--danger);}
+.l-tip{background:var(--warning-light);color:var(--warning);}
+
+/* ─ DEF BOX ─ */
+.def-box{background:var(--primary);color:white;border-radius:12px;padding:20px 24px;margin-bottom:18px;position:relative;overflow:hidden;}
+.def-box::before{content:'"';position:absolute;right:16px;top:-8px;font-size:80px;color:rgba(255,255,255,.06);font-family:serif;line-height:1;}
+.def-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7aa2f7;margin-bottom:8px;}
+.def-box p{font-size:13.5px;line-height:1.9;color:rgba(255,255,255,.88);}
+.def-box strong{color:#7aa2f7;}
+
+/* ─ TABLE ─ */
+.tw{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--primary);color:white;}
+thead th{padding:11px 14px;text-align:left;font-weight:600;font-size:12px;letter-spacing:.03em;}
+tbody tr{border-bottom:1px solid var(--gray-100);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#f7f9ff;}
+tbody td{padding:10px 14px;color:var(--text);vertical-align:top;}
+tbody td:first-child{font-weight:600;color:var(--primary);}
+.tc{text-align:center;}
+
+/* ─ CARDS ─ */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:11px;margin:14px 0;}
+.card{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--gray-50);}
+.card-t{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.card-b{font-size:13px;color:var(--text);line-height:1.7;}
+.card-b strong{color:var(--primary);}
+
+/* ─ COMPARE 2COL ─ */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:14px 0;}
+.cc{border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.cc-h{padding:11px 17px;font-size:14px;font-weight:700;color:white;}
+.cc-b{padding:13px 17px;background:var(--bg);}
+.cc-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--gray-100);font-size:12.5px;}
+.cc-row:last-child{border-bottom:none;}
+.cc-k{color:var(--text-muted);min-width:58px;font-size:11px;padding-top:2px;flex-shrink:0;}
+.cc-v{color:var(--text);font-weight:500;}
+
+/* ─ TRAP ─ */
+.trap{border:none;border-radius:12px;margin:16px 0;overflow:hidden;}
+.trap-h{display:flex;align-items:center;gap:8px;padding:11px 17px;background:var(--danger);color:white;}
+.trap-ht{font-size:12.5px;font-weight:700;}
+.trap-b{background:var(--danger-light);padding:16px 20px;border:1px solid #f5c6c2;border-top:none;border-radius:0 0 12px 12px;}
+.trap-b p{font-size:13px;color:#7a1c1c;line-height:1.8;margin-bottom:7px;}
+.trap-b p:last-child{margin-bottom:0;}
+.tq{background:white;border-left:3px solid var(--danger);padding:9px 13px;border-radius:0 8px 8px 0;margin:9px 0;font-size:13px;color:var(--text);font-style:italic;}
+.vd{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.wrong{background:var(--danger);color:white;}
+.right{background:var(--success);color:white;}
+
+/* ─ EXAM ─ */
+.exam-card{border:1px solid var(--border);border-radius:12px;margin:13px 0;overflow:hidden;}
+.exam-h{display:flex;align-items:center;justify-content:space-between;padding:10px 17px;background:var(--gray-50);border-bottom:1px solid var(--border);}
+.exam-yr{font-size:12px;font-weight:700;color:var(--primary);}
+.exam-star{color:#e8b000;font-size:12px;letter-spacing:2px;}
+.exam-body{padding:15px 17px;}
+.exam-q{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:11px;line-height:1.7;}
+.exam-opts{display:flex;flex-direction:column;gap:4px;}
+.opt{font-size:13px;padding:7px 11px;border-radius:7px;border:1px solid transparent;}
+.opt-w{background:#fdf0ef;border-color:#f5c6c2;color:#7a1c1c;text-decoration:line-through;opacity:.8;}
+.opt-w::before{content:'✗ ';}
+.opt-r{background:var(--success-light);border-color:#a3dbc0;color:#0d4a2a;font-weight:600;}
+.opt-r::before{content:'✓ ';}
+.opt-n{background:var(--gray-50);border-color:var(--border);color:var(--text);}
+.exam-exp{margin-top:11px;padding:11px 13px;background:var(--gray-50);border-radius:8px;font-size:12.5px;color:var(--text-muted);line-height:1.75;border-left:3px solid var(--accent);}
+
+/* ─ CHECKLIST ─ */
+.cl{list-style:none;margin:13px 0;display:flex;flex-direction:column;gap:6px;}
+.cl li{display:flex;align-items:flex-start;gap:9px;font-size:13px;padding:8px 13px;border-radius:8px;border:1px solid var(--border);background:var(--bg);}
+.cl-w{background:#fdf0ef;border-color:#f5c6c2;}
+.cl-w::before{content:'⚠';color:var(--danger)!important;font-size:13px;flex-shrink:0;margin-top:2px;}
+.cl-r{background:var(--success-light);border-color:#a3dbc0;}
+.cl-r::before{content:'✓';color:var(--success)!important;font-size:13px;flex-shrink:0;margin-top:2px;}
+
+/* ─ MEMORY ─ */
+.mem{background:linear-gradient(135deg,#1a2540 0%,#2d4080 100%);border-radius:14px;padding:22px 26px;color:white;margin:16px 0;position:relative;overflow:hidden;}
+.mem::before{content:'💡';position:absolute;right:18px;top:14px;font-size:42px;opacity:.15;}
+.mem-t{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7aa2f7;margin-bottom:13px;}
+.mem-items{display:flex;flex-direction:column;gap:9px;}
+.mem-item{display:flex;gap:11px;align-items:flex-start;}
+.mem-k{font-family:var(--mono);font-size:11px;font-weight:600;background:rgba(122,162,247,.2);color:#7aa2f7;padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;}
+.mem-v{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;}
+.mem-v strong{color:#7aa2f7;}
+
+/* ─ SVG DIAGRAMS ─ */
+.diagram-wrap{background:var(--gray-50);border:1px solid var(--border);border-radius:12px;padding:20px;margin:16px 0;overflow-x:auto;}
+.diagram-title{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase;}
+
+/* ─ SERVICE BADGES ─ */
+.svc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0;}
+.svc-card{border-radius:10px;overflow:hidden;text-align:center;border:1px solid var(--border);}
+.svc-icon{font-size:24px;padding:14px 0 8px;}
+.svc-label{font-size:11px;font-weight:700;padding:0 8px 10px;line-height:1.4;color:var(--text);}
+.svc-tag{font-size:9px;font-weight:700;padding:3px 6px;border-radius:20px;margin:0 0 10px;}
+
+/* ─ SF ─ */
+.sf{color:#e8b000;}
+.exam-count{display:inline-block;background:var(--danger);color:white;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+
+/* ─ DIVIDER ─ */
+.div{height:1px;background:var(--gray-100);margin:26px 0;}
+
+/* ─ FOOTER ─ */
+.footer{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);}
+
+@media(max-width:640px){
+  .content-card,.doc-header{padding:24px 20px;}
+  .tab-bar{padding:0 20px;}
+  .cg,.svc-grid,.toc-list{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="meta-row">
+    <span class="badge badge-ch">Chapter 07 · 네트워크 정보보호</span>
+    <span class="badge badge-hot">9급 핵심</span>
+    <span class="badge badge-ok">기출 8문제 수록</span>
+  </div>
+  <div class="h-title">IPSec (IP Security) 완전 교재</div>
+  <div class="h-sub">5가지 서비스 · AH vs ESP · 전송 모드 vs 터널 모드 · SA · IKE · 패킷 구조 시각화 · 기출 전수</div>
+  <div class="h-stats">
+    <div><div class="stat-n">5가지</div><div class="stat-l">IPSec 서비스</div></div>
+    <div><div class="stat-n">2가지</div><div class="stat-l">프로토콜 AH·ESP</div></div>
+    <div><div class="stat-n">2가지</div><div class="stat-l">운용 모드</div></div>
+    <div><div class="stat-n">8문제</div><div class="stat-l">기출 수록</div></div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="sw('intro')">📋 개요·서비스</button>
+  <button class="tab-btn" onclick="sw('ah')">🔐 AH 프로토콜</button>
+  <button class="tab-btn" onclick="sw('esp')">🔒 ESP 프로토콜</button>
+  <button class="tab-btn" onclick="sw('mode')">🔄 전송/터널 모드</button>
+  <button class="tab-btn" onclick="sw('sa')">🔑 SA · IKE</button>
+  <button class="tab-btn" onclick="sw('exam')">📝 기출문제</button>
+  <button class="tab-btn" onclick="sw('summary')">💡 암기·정리</button>
+</div>
+
+<div class="content-card">
+
+<!-- ═══════════ TAB 1: 개요 ═══════════ -->
+<div class="tab-pane active" id="tab-intro">
+<div class="toc">
+  <div class="toc-title">이 탭의 목차</div>
+  <ul class="toc-list">
+    <li data-num="1">IPSec 정의 및 특징</li>
+    <li data-num="2">IPSec 5가지 보안 서비스</li>
+    <li data-num="3">IPSec 전체 구조 다이어그램</li>
+    <li data-num="4">IPSec 문서 구성 (RFC)</li>
+  </ul>
+</div>
+
+<div class="sec-h"><div class="sec-num">1</div><div class="sec-title">IPSec 정의 및 특징</div><span class="sec-label l-def">Definition</span></div>
+
+<div class="def-box">
+  <div class="def-lbl">공식 정의</div>
+  <p>IPSec(IP Security)은 현재 사용 중인 인터넷 프로토콜(IPv4·IPv6)에 <strong>추가적인 보안 헤더를 붙여서 보안 기능을 제공</strong>하는 3계층(네트워크층) 표준 프로토콜이다. 인증·기밀성·키 관리 등 3가지 영역에서 사용할 수 있으며, <strong>방화벽·게이트웨이·라우터에 구현</strong>한다. IP 스푸핑·스니핑에 대한 대응이 가능하다.</p>
+</div>
+
+<div class="cards">
+  <div class="card"><div class="card-t">동작 계층</div><div class="card-b"><strong>네트워크층(3층, IP 계층)</strong>에서 동작. 상위 응용 계층에 투명하게 보안 제공.</div></div>
+  <div class="card"><div class="card-t">3대 기능 영역</div><div class="card-b">① <strong>인증(Authentication)</strong><br>② <strong>기밀성(Confidentiality)</strong><br>③ <strong>키 관리(Key Management)</strong></div></div>
+  <div class="card"><div class="card-t">구현 위치</div><div class="card-b">방화벽, 라우터, 보안 게이트웨이, 호스트 등 다양한 위치에 구현 가능.</div></div>
+  <div class="card"><div class="card-t">알고리즘</div><div class="card-b">다양한 암호화 알고리즘 지원. <strong>신규 알고리즘 적용 가능</strong>(지정된 알고리즘만 가능 → ✗ 오답)</div></div>
+  <div class="card"><div class="card-t">적용 범위</div><div class="card-b">원격 접속, 인트라넷, 엑스트라넷 방식 모두 적용 가능. 전자상거래 보안 강화에도 활용.</div></div>
+  <div class="card"><div class="card-t">응용 투명성</div><div class="card-b">응용 프로그램이 IPSec 존재를 모르고 동작. <strong>OS·응용 수정 불필요</strong> (↔ SSL은 응용층에서 처리)</div></div>
+</div>
+
+<div class="sec-h"><div class="sec-num">2</div><div class="sec-title">IPSec 5가지 보안 서비스</div><span class="sec-label l-exam">★★★ 핵심 암기</span></div>
+
+<!-- 5가지 서비스 시각 카드 -->
+<div class="svc-grid">
+  <div class="svc-card" style="background:#f0f4ff;">
+    <div class="svc-icon">🛡</div>
+    <div class="svc-label">접근 제어<br>Access Control</div>
+    <div style="padding-bottom:10px;"><span class="svc-tag" style="background:#e8eeff;color:#2d5be3;">AH·ESP</span></div>
+  </div>
+  <div class="svc-card" style="background:#f0fff4;">
+    <div class="svc-icon">🔗</div>
+    <div class="svc-label">비연결 무결성<br>Connectionless Integrity</div>
+    <div style="padding-bottom:10px;"><span class="svc-tag" style="background:#edf7f2;color:#1a7a4a;">AH·ESP</span></div>
+  </div>
+  <div class="svc-card" style="background:#fffbeb;">
+    <div class="svc-icon">✅</div>
+    <div class="svc-label">데이터 발신처 인증<br>Data Origin Auth</div>
+    <div style="padding-bottom:10px;"><span class="svc-tag" style="background:#fffbeb;color:#b45309;">AH·ESP</span></div>
+  </div>
+  <div class="svc-card" style="background:#fdf0ef;">
+    <div class="svc-icon">🚫</div>
+    <div class="svc-label">재전송 패킷 거부<br>Anti-Replay</div>
+    <div style="padding-bottom:10px;"><span class="svc-tag" style="background:#fdf0ef;color:#c0392b;">AH·ESP</span></div>
+  </div>
+  <div class="svc-card" style="background:#ede9fe;border:2px solid #8b5cf6;">
+    <div class="svc-icon">🔒</div>
+    <div class="svc-label"><strong>기밀성</strong><br>Confidentiality<br>(암호화)</div>
+    <div style="padding-bottom:10px;"><span class="svc-tag" style="background:#ede9fe;color:#6d28d9;">ESP만!</span></div>
+  </div>
+</div>
+<p style="font-size:12.5px;color:var(--text-muted);margin-top:4px;">⚠ <strong>기밀성(Confidentiality/암호화)</strong>는 <strong>ESP에서만</strong> 제공! AH는 기밀성 없음 — 매년 출제</p>
+
+<div class="sec-h"><div class="sec-num">3</div><div class="sec-title">IPSec 전체 구조 한눈에</div><span class="sec-label l-def">Architecture</span></div>
+
+<!-- SVG: IPSec 전체 구조 다이어그램 -->
+<div class="diagram-wrap">
+  <div class="diagram-title">IPSec 구조 (Architecture)</div>
+  <svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:800px;display:block;margin:0 auto;">
+    <!-- 배경 -->
+    <rect x="10" y="10" width="780" height="300" rx="12" fill="#f8f9fa" stroke="#dde3ec" stroke-width="1.5"/>
+    
+    <!-- IP 패킷 원본 -->
+    <rect x="30" y="40" width="740" height="50" rx="8" fill="#1a2540"/>
+    <text x="400" y="61" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="10" font-family="sans-serif" letter-spacing="1">원본 IP 패킷</text>
+    <rect x="36" y="44" width="100" height="42" rx="6" fill="rgba(255,255,255,.12)"/>
+    <text x="86" y="69" text-anchor="middle" fill="#7aa2f7" font-size="11" font-family="sans-serif" font-weight="600">IP Header</text>
+    <rect x="142" y="44" width="622" height="42" rx="6" fill="rgba(255,255,255,.08)"/>
+    <text x="453" y="69" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="11" font-family="sans-serif">Payload (TCP/UDP + Data)</text>
+
+    <!-- 화살표 -->
+    <text x="400" y="112" text-anchor="middle" fill="#5a6478" font-size="16">↓</text>
+    <text x="400" y="125" text-anchor="middle" fill="#5a6478" font-size="10" font-family="sans-serif">IPSec 처리</text>
+
+    <!-- AH / ESP 분기 -->
+    <!-- AH 박스 -->
+    <rect x="30" y="138" width="360" height="90" rx="10" fill="#fff" stroke="#2d5be3" stroke-width="2"/>
+    <text x="210" y="158" text-anchor="middle" fill="#2d5be3" font-size="12" font-family="sans-serif" font-weight="700">AH (Authentication Header)</text>
+    <text x="210" y="176" text-anchor="middle" fill="#1c2331" font-size="11" font-family="sans-serif">✓ 인증  ✓ 무결성  ✓ 재전송 방지</text>
+    <rect x="50" y="186" width="150" height="28" rx="6" fill="#e8eeff"/>
+    <text x="125" y="204" text-anchor="middle" fill="#2d5be3" font-size="11" font-family="sans-serif" font-weight="600">기밀성(암호화) ✗</text>
+    <rect x="215" y="186" width="155" height="28" rx="6" fill="#edf7f2"/>
+    <text x="292" y="204" text-anchor="middle" fill="#1a7a4a" font-size="11" font-family="sans-serif" font-weight="600">RFC 2402</text>
+
+    <!-- ESP 박스 -->
+    <rect x="410" y="138" width="360" height="90" rx="10" fill="#fff" stroke="#6d28d9" stroke-width="2"/>
+    <text x="590" y="158" text-anchor="middle" fill="#6d28d9" font-size="12" font-family="sans-serif" font-weight="700">ESP (Encapsulating Security Payload)</text>
+    <text x="590" y="176" text-anchor="middle" fill="#1c2331" font-size="11" font-family="sans-serif">✓ 인증  ✓ 무결성  ✓ 재전송 방지</text>
+    <rect x="430" y="186" width="150" height="28" rx="6" fill="#ede9fe"/>
+    <text x="505" y="204" text-anchor="middle" fill="#6d28d9" font-size="11" font-family="sans-serif" font-weight="600">기밀성(암호화) ✓</text>
+    <rect x="595" y="186" width="155" height="28" rx="6" fill="#edf7f2"/>
+    <text x="672" y="204" text-anchor="middle" fill="#1a7a4a" font-size="11" font-family="sans-serif" font-weight="600">RFC 2406</text>
+
+    <!-- 운용 모드 -->
+    <rect x="30" y="245" width="360" height="40" rx="8" fill="#f0f2f5" stroke="#dde3ec"/>
+    <text x="210" y="269" text-anchor="middle" fill="#374151" font-size="11" font-family="sans-serif">전송 모드 | 터널 모드</text>
+    <rect x="410" y="245" width="360" height="40" rx="8" fill="#f0f2f5" stroke="#dde3ec"/>
+    <text x="590" y="269" text-anchor="middle" fill="#374151" font-size="11" font-family="sans-serif">전송 모드 | 터널 모드</text>
+    
+    <!-- IKE -->
+    <rect x="280" y="285" width="240" height="18" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="1"/>
+    <text x="400" y="297" text-anchor="middle" fill="#b45309" font-size="10" font-family="sans-serif" font-weight="700">IKE (Internet Key Exchange) — SA 생성</text>
+  </svg>
+</div>
+
+<div class="sec-h"><div class="sec-num">4</div><div class="sec-title">IPSec 문서 구성 (RFC)</div><span class="sec-label l-def">RFC</span></div>
+<div class="tw"><table>
+  <thead><tr><th>구성 요소</th><th>RFC 번호</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td>Architecture (구조)</td><td class="tc">RFC 2401</td><td>IPSec 일반 개념, 보안 요구사항, 메커니즘 정의</td></tr>
+    <tr><td>AH (인증 헤더)</td><td class="tc">RFC 2402</td><td>메시지 인증을 제공하는 확장 헤더</td></tr>
+    <tr><td>ESP (캡슐화 보안 페이로드)</td><td class="tc">RFC 2406</td><td>암호화·인증의 결합 제공, 캡슐화 헤더·트레일러</td></tr>
+    <tr><td>IKE (인터넷 키 교환)</td><td class="tc">RFC 2409</td><td>IPSec SA 생성 위한 키 관리 기술</td></tr>
+  </tbody>
+</table></div>
+<div class="footer"><span>정보보안 합격전략 교재 · INHYUK PI</span><span>개요·서비스 탭</span></div>
+</div>
+
+<!-- ═══════════ TAB 2: AH ═══════════ -->
+<div class="tab-pane" id="tab-ah">
+<div class="sec-h"><div class="sec-num">1</div><div class="sec-title">AH (Authentication Header) 완전 정리</div><span class="sec-label l-exam">★★★</span></div>
+
+<div class="def-box">
+  <div class="def-lbl">AH 정의</div>
+  <p>AH(Authentication Header)는 IPSec의 <strong>인증 헤더 프로토콜</strong>로, IP 패킷에 대한 <strong>무결성·인증·재전송 방지</strong>를 제공한다. 단, <strong>기밀성(암호화)은 제공하지 않는다.</strong> 인증 범위는 IP 헤더 포함 전체(터널 모드) 또는 IP 헤더 제외 나머지(전송 모드)에 적용 가능하다.</p>
+</div>
+
+<!-- AH 패킷 구조 SVG -->
+<div class="diagram-wrap">
+  <div class="diagram-title">AH 패킷 구조 (IPv4 전송 모드)</div>
+  <svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:0 auto;">
+    <!-- 전송 모드 -->
+    <text x="10" y="20" fill="#5a6478" font-size="11" font-family="sans-serif" font-weight="600">Transport Mode (전송 모드)</text>
+    
+    <!-- 블록들 -->
+    <rect x="10" y="30" width="130" height="44" rx="6" fill="#e8eeff" stroke="#2d5be3" stroke-width="1.5"/>
+    <text x="75" y="47" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">Original</text>
+    <text x="75" y="60" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">IP Header</text>
+    
+    <rect x="146" y="30" width="90" height="44" rx="6" fill="#1a2540" stroke="#1a2540"/>
+    <text x="191" y="47" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif" font-weight="700">AH</text>
+    <text x="191" y="60" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="242" y="30" width="150" height="44" rx="6" fill="#edf7f2" stroke="#1a7a4a" stroke-width="1.5"/>
+    <text x="317" y="47" text-anchor="middle" fill="#1a7a4a" font-size="10" font-family="sans-serif" font-weight="700">Upper Layer</text>
+    <text x="317" y="60" text-anchor="middle" fill="#1a7a4a" font-size="10" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="398" y="30" width="200" height="44" rx="6" fill="#edf7f2" stroke="#1a7a4a" stroke-width="1.5"/>
+    <text x="498" y="52" text-anchor="middle" fill="#1a7a4a" font-size="10" font-family="sans-serif" font-weight="700">Data (Payload)</text>
+    
+    <!-- 인증 범위 표시 -->
+    <line x1="146" y1="84" x2="598" y2="84" stroke="#2d5be3" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="370" y="97" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif">← 인증 범위 (Authenticated) →</text>
+    <line x1="146" y1="84" x2="146" y2="90" stroke="#2d5be3" stroke-width="1.5"/>
+    <line x1="598" y1="84" x2="598" y2="90" stroke="#2d5be3" stroke-width="1.5"/>
+    
+    <!-- 터널 모드 -->
+    <text x="10" y="125" fill="#5a6478" font-size="11" font-family="sans-serif" font-weight="600">Tunnel Mode (터널 모드)</text>
+    
+    <rect x="10" y="135" width="100" height="38" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+    <text x="60" y="148" text-anchor="middle" fill="#b45309" font-size="9" font-family="sans-serif" font-weight="700">New IP</text>
+    <text x="60" y="160" text-anchor="middle" fill="#b45309" font-size="9" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="116" y="135" width="90" height="38" rx="6" fill="#1a2540" stroke="#1a2540"/>
+    <text x="161" y="148" text-anchor="middle" fill="#7aa2f7" font-size="9" font-family="sans-serif" font-weight="700">AH</text>
+    <text x="161" y="160" text-anchor="middle" fill="#7aa2f7" font-size="9" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="212" y="135" width="110" height="38" rx="6" fill="#e8eeff" stroke="#2d5be3" stroke-width="1.5"/>
+    <text x="267" y="148" text-anchor="middle" fill="#2d5be3" font-size="9" font-family="sans-serif" font-weight="700">Original</text>
+    <text x="267" y="160" text-anchor="middle" fill="#2d5be3" font-size="9" font-family="sans-serif" font-weight="700">IP Header</text>
+    
+    <rect x="328" y="135" width="115" height="38" rx="6" fill="#edf7f2" stroke="#1a7a4a" stroke-width="1.5"/>
+    <text x="385" y="148" text-anchor="middle" fill="#1a7a4a" font-size="9" font-family="sans-serif" font-weight="700">Upper Layer</text>
+    <text x="385" y="160" text-anchor="middle" fill="#1a7a4a" font-size="9" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="449" y="135" width="150" height="38" rx="6" fill="#edf7f2" stroke="#1a7a4a" stroke-width="1.5"/>
+    <text x="524" y="155" text-anchor="middle" fill="#1a7a4a" font-size="9" font-family="sans-serif" font-weight="700">Data</text>
+    
+    <!-- 인증 범위 터널 -->
+    <line x1="116" y1="175" x2="600" y2="175" stroke="#6d28d9" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="358" y="175" text-anchor="middle" fill="white" font-size="1">.</text>
+  </svg>
+</div>
+
+<!-- AH 헤더 필드 -->
+<div class="diagram-wrap">
+  <div class="diagram-title">AH 헤더 필드 구조</div>
+  <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
+    <!-- 헤더 행 1 -->
+    <rect x="10" y="10" width="700" height="10" rx="4" fill="none"/>
+    
+    <rect x="10" y="20" width="160" height="44" rx="0" fill="#e8eeff" stroke="#2d5be3" stroke-width="1"/>
+    <text x="90" y="37" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="600">Next Header</text>
+    <text x="90" y="52" text-anchor="middle" fill="#5a6478" font-size="9" font-family="sans-serif">8 bits</text>
+    
+    <rect x="170" y="20" width="160" height="44" rx="0" fill="#e8eeff" stroke="#2d5be3" stroke-width="1"/>
+    <text x="250" y="37" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="600">Payload Length</text>
+    <text x="250" y="52" text-anchor="middle" fill="#5a6478" font-size="9" font-family="sans-serif">8 bits</text>
+    
+    <rect x="330" y="20" width="380" height="44" rx="0" fill="#f0f2f5" stroke="#ced4da" stroke-width="1"/>
+    <text x="520" y="37" text-anchor="middle" fill="#374151" font-size="10" font-family="sans-serif" font-weight="600">Reserved</text>
+    <text x="520" y="52" text-anchor="middle" fill="#5a6478" font-size="9" font-family="sans-serif">16 bits</text>
+    
+    <!-- 헤더 행 2 -->
+    <rect x="10" y="64" width="700" height="44" rx="0" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+    <text x="360" y="81" text-anchor="middle" fill="#6d28d9" font-size="11" font-family="sans-serif" font-weight="600">Security Parameter Index (SPI)</text>
+    <text x="360" y="96" text-anchor="middle" fill="#6d28d9" font-size="9" font-family="sans-serif">32 bits — SA를 식별하는 고유 인덱스</text>
+    
+    <!-- 헤더 행 3 -->
+    <rect x="10" y="108" width="700" height="44" rx="0" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+    <text x="360" y="125" text-anchor="middle" fill="#6d28d9" font-size="11" font-family="sans-serif" font-weight="600">Sequence Number Field</text>
+    <text x="360" y="140" text-anchor="middle" fill="#6d28d9" font-size="9" font-family="sans-serif">32 bits — 재전송 방지(Anti-Replay) 위한 순서 번호</text>
+    
+    <!-- 헤더 행 4 -->
+    <rect x="10" y="152" width="700" height="44" rx="0" fill="#1a2540" stroke="#1a2540"/>
+    <text x="360" y="169" text-anchor="middle" fill="#7aa2f7" font-size="11" font-family="sans-serif" font-weight="600">Authentication Data (ICV)</text>
+    <text x="360" y="184" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="9" font-family="sans-serif">가변 길이 — 무결성 검증값 (MAC)</text>
+  </svg>
+</div>
+
+<div class="cg">
+  <div class="cc">
+    <div class="cc-h" style="background:#2d5be3;">AH가 제공하는 서비스 ✓</div>
+    <div class="cc-b">
+      <div class="cc-row"><span class="cc-k">무결성</span><span class="cc-v">메시지 위변조 방지 (비연결 무결성)</span></div>
+      <div class="cc-row"><span class="cc-k">인증</span><span class="cc-v">데이터 발신처 인증</span></div>
+      <div class="cc-row"><span class="cc-k">재전송</span><span class="cc-v">재전송 공격 방지 (순서번호 사용)</span></div>
+      <div class="cc-row"><span class="cc-k">접근제어</span><span class="cc-v">SA 기반 접근 제어</span></div>
+    </div>
+  </div>
+  <div class="cc">
+    <div class="cc-h" style="background:#c0392b;">AH가 제공하지 않는 서비스 ✗</div>
+    <div class="cc-b">
+      <div class="cc-row"><span class="cc-k">기밀성</span><span class="cc-v" style="color:var(--danger);font-weight:700;">암호화 없음! (ESP만 제공)</span></div>
+      <div class="cc-row"><span class="cc-k">주의</span><span class="cc-v">"AH 프로토콜의 페이로드 데이터와 패딩 내용은 기밀성 범위에 속한다" → ✗ 오답</span></div>
+      <div class="cc-row"><span class="cc-k">혼동</span><span class="cc-v">"AH는 암호화, ESP는 인증" → ✗ 반대!</span></div>
+    </div>
+  </div>
+</div>
+<div class="footer"><span>정보보안 합격전략 교재 · INHYUK PI</span><span>AH 탭</span></div>
+</div>
+
+<!-- ═══════════ TAB 3: ESP ═══════════ -->
+<div class="tab-pane" id="tab-esp">
+<div class="sec-h"><div class="sec-num">1</div><div class="sec-title">ESP (Encapsulating Security Payload)</div><span class="sec-label l-exam">★★★</span></div>
+
+<div class="def-box">
+  <div class="def-lbl">ESP 정의</div>
+  <p>ESP(Encapsulating Security Payload)는 <strong>암호화(기밀성) + 인증 + 무결성 + 재전송 방지</strong>를 모두 제공하는 IPSec 프로토콜이다. DES, 3-DES, IDEA, RC5 등의 암호화 알고리즘을 사용하며, <strong>전송 모드와 터널 모드 두 가지 모두 적용 가능</strong>하다. AH와의 핵심 차이는 <strong>기밀성(암호화) 제공 여부</strong>이다.</p>
+</div>
+
+<!-- ESP 패킷 구조 SVG -->
+<div class="diagram-wrap">
+  <div class="diagram-title">ESP 패킷 구조 — 암호화·인증 범위</div>
+  <svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:0 auto;">
+    <!-- 헤더 레이블 -->
+    <text x="10" y="18" fill="#5a6478" font-size="11" font-family="sans-serif" font-weight="600">Transport Mode (전송 모드)</text>
+    
+    <!-- 블록들 -->
+    <rect x="10" y="28" width="100" height="44" rx="6" fill="#e8eeff" stroke="#2d5be3" stroke-width="1.5"/>
+    <text x="60" y="50" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">IP</text>
+    <text x="60" y="63" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="116" y="28" width="90" height="44" rx="6" fill="#1a2540"/>
+    <text x="161" y="50" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif" font-weight="700">ESP</text>
+    <text x="161" y="63" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="212" y="28" width="118" height="44" rx="6" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
+    <text x="271" y="50" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">Upper Layer</text>
+    <text x="271" y="63" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">+ Data</text>
+    
+    <rect x="336" y="28" width="118" height="44" rx="6" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
+    <text x="395" y="50" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">ESP</text>
+    <text x="395" y="63" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">Trailer</text>
+    
+    <rect x="460" y="28" width="118" height="44" rx="6" fill="#1a7a4a"/>
+    <text x="519" y="50" text-anchor="middle" fill="white" font-size="10" font-family="sans-serif" font-weight="700">ESP</text>
+    <text x="519" y="63" text-anchor="middle" fill="white" font-size="10" font-family="sans-serif" font-weight="700">Auth</text>
+    
+    <!-- 암호화 범위 -->
+    <rect x="212" y="80" width="242" height="14" rx="4" fill="#c4b5fd"/>
+    <text x="333" y="91" text-anchor="middle" fill="#4c1d95" font-size="9" font-family="sans-serif" font-weight="700">← 암호화(Encrypted) 범위 →</text>
+    
+    <!-- 인증 범위 -->
+    <rect x="116" y="100" width="462" height="14" rx="4" fill="#a7f3d0"/>
+    <text x="347" y="111" text-anchor="middle" fill="#065f46" font-size="9" font-family="sans-serif" font-weight="700">← 인증(Authenticated) 범위 →</text>
+    
+    <!-- ESP 헤더 필드 구조 -->
+    <text x="10" y="140" fill="#5a6478" font-size="11" font-family="sans-serif" font-weight="600">ESP 헤더 내부 구조</text>
+    
+    <rect x="10" y="150" width="580" height="32" rx="6" fill="#1a2540"/>
+    <text x="300" y="170" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif" font-weight="600">Security Parameter Index (SPI) — 32 bits</text>
+    
+    <rect x="10" y="185" width="580" height="32" rx="6" fill="#1a2540"/>
+    <text x="300" y="205" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif" font-weight="600">Sequence Number — 32 bits (재전송 방지)</text>
+  </svg>
+</div>
+
+<div class="tw"><table>
+  <thead><tr><th>ESP 구성 요소</th><th>위치</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td>ESP 헤더</td><td>원본 IP헤더 뒤</td><td>SPI(32bit) + Sequence Number(32bit)</td></tr>
+    <tr><td>Payload (페이로드)</td><td>ESP 헤더 뒤</td><td>암호화된 상위 계층 데이터</td></tr>
+    <tr><td>Padding</td><td>데이터 뒤</td><td>0~255 바이트. 블록 암호화 정렬용</td></tr>
+    <tr><td>Padding Length</td><td>패딩 뒤</td><td>패딩 길이 표시 (8 bits)</td></tr>
+    <tr><td>Next Header</td><td>Padding Length 뒤</td><td>상위 프로토콜 종류 (8 bits)</td></tr>
+    <tr><td><strong>ESP Auth (인증 데이터)</strong></td><td>맨 뒤</td><td>인증값(ICV). 무결성·인증 검증. 패킷의 끝에 추가.</td></tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">ESP 함정 — "ESP가 원래 IP패킷 전부를 암호화" (2023 지방직)</span></div>
+  <div class="trap-b">
+    <p>2023 지방직: "IPSec 터널 모드를 이용한 VPN에 대한 설명으로 옳지 않은 것은?"</p>
+    <div class="tq">③ "ESP는 원래 IP 패킷 전부와 원래 IP 패킷 앞뒤로 붙는 ESP 헤더와 트레일러를 모두 암호화한다" → <span class="vd wrong">✗ 오답</span></div>
+    <p>터널 모드 ESP 암호화 범위: <strong>원래 IP 패킷(헤더+페이로드) + ESP 트레일러</strong>까지 암호화. <strong>ESP 헤더 자체는 암호화 안 됨</strong> (SPI·Seq# 인식 필요). ESP Auth(인증 데이터)는 암호화 범위 바깥(패킷 끝에 추가).</p>
+  </div>
+</div>
+<div class="footer"><span>정보보안 합격전략 교재 · INHYUK PI</span><span>ESP 탭</span></div>
+</div>
+
+<!-- ═══════════ TAB 4: 모드 ═══════════ -->
+<div class="tab-pane" id="tab-mode">
+<div class="sec-h"><div class="sec-num">1</div><div class="sec-title">전송 모드 vs 터널 모드 시각 비교</div><span class="sec-label l-exam">★★★ 최빈출</span></div>
+
+<!-- 전송 모드 다이어그램 -->
+<div class="diagram-wrap">
+  <div class="diagram-title">① 전송 모드 (Transport Mode) — IP 헤더 유지, 페이로드만 보호</div>
+  <svg viewBox="0 0 760 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:0 auto;">
+    <!-- 원본 패킷 -->
+    <text x="10" y="18" fill="#5a6478" font-size="10" font-family="sans-serif">원본 패킷</text>
+    <rect x="10" y="24" width="130" height="36" rx="5" fill="#e8eeff" stroke="#2d5be3" stroke-width="1.5"/>
+    <text x="75" y="46" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">IP Header</text>
+    <rect x="146" y="24" width="380" height="36" rx="5" fill="#edf7f2" stroke="#1a7a4a" stroke-width="1.5"/>
+    <text x="336" y="46" text-anchor="middle" fill="#1a7a4a" font-size="10" font-family="sans-serif" font-weight="700">TCP/UDP Header + Data (Payload)</text>
+    
+    <!-- 화살표 -->
+    <text x="380" y="80" text-anchor="middle" fill="#374151" font-size="14">↓</text>
+    <text x="380" y="94" text-anchor="middle" fill="#374151" font-size="10" font-family="sans-serif">AH 또는 ESP 헤더 삽입</text>
+    
+    <!-- 전송 모드 결과 -->
+    <rect x="10" y="104" width="130" height="36" rx="5" fill="#e8eeff" stroke="#2d5be3" stroke-width="2"/>
+    <text x="75" y="126" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">IP Header</text>
+    <text x="75" y="138" text-anchor="middle" fill="#2d5be3" font-size="8" font-family="sans-serif">(원래 그대로)</text>
+    
+    <rect x="146" y="104" width="80" height="36" rx="5" fill="#1a2540"/>
+    <text x="186" y="121" text-anchor="middle" fill="#7aa2f7" font-size="9" font-family="sans-serif" font-weight="700">AH / ESP</text>
+    <text x="186" y="133" text-anchor="middle" fill="#7aa2f7" font-size="9" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <rect x="232" y="104" width="296" height="36" rx="5" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
+    <text x="380" y="121" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">TCP/UDP Header + Data</text>
+    <text x="380" y="133" text-anchor="middle" fill="#6d28d9" font-size="8" font-family="sans-serif">(ESP일 때 암호화됨)</text>
+    
+    <!-- 라벨 -->
+    <rect x="545" y="104" width="110" height="36" rx="5" fill="#1a7a4a"/>
+    <text x="600" y="121" text-anchor="middle" fill="white" font-size="9" font-family="sans-serif" font-weight="700">ESP Auth</text>
+    <text x="600" y="133" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8" font-family="sans-serif">(ESP만)</text>
+    
+    <!-- 핵심 설명 -->
+    <rect x="665" y="104" width="90" height="36" rx="5" fill="#fffbeb" stroke="#b45309"/>
+    <text x="710" y="121" text-anchor="middle" fill="#b45309" font-size="9" font-family="sans-serif" font-weight="700">IP 헤더</text>
+    <text x="710" y="133" text-anchor="middle" fill="#b45309" font-size="9" font-family="sans-serif" font-weight="700">보호 안함</text>
+  </svg>
+</div>
+
+<!-- 터널 모드 다이어그램 -->
+<div class="diagram-wrap">
+  <div class="diagram-title">② 터널 모드 (Tunnel Mode) — 전체 IP 패킷 보호 + 새 IP 헤더 추가</div>
+  <svg viewBox="0 0 760 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:0 auto;">
+    <!-- 원본 패킷 -->
+    <text x="10" y="18" fill="#5a6478" font-size="10" font-family="sans-serif">원본 패킷</text>
+    <rect x="10" y="24" width="120" height="36" rx="5" fill="#e8eeff" stroke="#2d5be3" stroke-width="1.5"/>
+    <text x="70" y="46" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">Original IP Hdr</text>
+    <rect x="136" y="24" width="350" height="36" rx="5" fill="#edf7f2" stroke="#1a7a4a" stroke-width="1.5"/>
+    <text x="311" y="46" text-anchor="middle" fill="#1a7a4a" font-size="10" font-family="sans-serif" font-weight="700">TCP/UDP Header + Data</text>
+    
+    <!-- 화살표 -->
+    <text x="380" y="82" text-anchor="middle" fill="#374151" font-size="14">↓</text>
+    <text x="380" y="96" text-anchor="middle" fill="#374151" font-size="10" font-family="sans-serif">전체 캡슐화 후 새 IP 헤더 추가</text>
+    
+    <!-- 터널 모드 결과 -->
+    <rect x="10" y="106" width="110" height="52" rx="5" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+    <text x="65" y="127" text-anchor="middle" fill="#b45309" font-size="10" font-family="sans-serif" font-weight="700">New IP</text>
+    <text x="65" y="141" text-anchor="middle" fill="#b45309" font-size="10" font-family="sans-serif" font-weight="700">Header</text>
+    <text x="65" y="153" text-anchor="middle" fill="#b45309" font-size="8" font-family="sans-serif">(다른 정보)</text>
+    
+    <rect x="126" y="106" width="78" height="52" rx="5" fill="#1a2540"/>
+    <text x="165" y="131" text-anchor="middle" fill="#7aa2f7" font-size="9" font-family="sans-serif" font-weight="700">AH / ESP</text>
+    <text x="165" y="145" text-anchor="middle" fill="#7aa2f7" font-size="9" font-family="sans-serif" font-weight="700">Header</text>
+    
+    <!-- 암호화 박스 -->
+    <rect x="208" y="106" width="390" height="52" rx="5" fill="#ede9fe" stroke="#6d28d9" stroke-width="2"/>
+    <text x="403" y="127" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">Original IP Hdr + TCP/UDP Hdr + Data + Trailer</text>
+    <text x="403" y="143" text-anchor="middle" fill="#6d28d9" font-size="9" font-family="sans-serif">← 전체 암호화됨 (ESP 터널 모드) →</text>
+    
+    <rect x="604" y="106" width="90" height="52" rx="5" fill="#1a7a4a"/>
+    <text x="649" y="131" text-anchor="middle" fill="white" font-size="9" font-family="sans-serif" font-weight="700">ESP</text>
+    <text x="649" y="145" text-anchor="middle" fill="white" font-size="9" font-family="sans-serif" font-weight="700">Auth</text>
+    
+    <!-- 인증 범위 -->
+    <line x1="126" y1="162" x2="694" y2="162" stroke="#2d5be3" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="410" y="173" text-anchor="middle" fill="#2d5be3" font-size="9" font-family="sans-serif">← ESP 인증 범위 (AH는 New IP Header 포함하여 전체 인증) →</text>
+  </svg>
+</div>
+
+<!-- 비교표 -->
+<div class="tw"><table>
+  <thead><tr><th>구분</th><th>전송 모드 (Transport)</th><th>터널 모드 (Tunnel)</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>보호 범위</td>
+      <td>IP <strong>페이로드</strong>만 보호<br><span style="color:var(--danger);">IP 헤더는 보호 안 함</span></td>
+      <td><strong>전체 IP 패킷</strong> 보호<br>(원래 헤더 포함)</td>
+    </tr>
+    <tr>
+      <td>IP 헤더</td>
+      <td>원래 IP 헤더 <strong>그대로 유지</strong></td>
+      <td>원래 IP 헤더 암호화 후<br><strong>새 IP 헤더 추가</strong></td>
+    </tr>
+    <tr>
+      <td>새 IP 헤더</td>
+      <td class="tc" style="color:var(--danger);">없음</td>
+      <td>있음 (<strong>원래와 다른 정보</strong>)</td>
+    </tr>
+    <tr>
+      <td>사용 환경</td>
+      <td>호스트-대-호스트<br>(종단-대-종단)</td>
+      <td>라우터-라우터, 호스트-라우터<br>(송·수신자 양쪽 모두 호스트가 아닐 때)</td>
+    </tr>
+    <tr>
+      <td>패킷 크기</td>
+      <td>작음</td>
+      <td>큼 (<strong>새 IP헤더 추가로 패킷 길어짐</strong>)</td>
+    </tr>
+    <tr>
+      <td>VPN 활용</td>
+      <td>덜 사용됨</td>
+      <td><strong>VPN에 주로 사용</strong></td>
+    </tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">전송 모드 함정 3가지 — 반복 출제</span></div>
+  <div class="trap-b">
+    <div class="tq">"전송(Transport) 모드에서 IP 헤더도 암호화된다" → <span class="vd wrong">✗ 오답</span> (2016 국회직)</div>
+    <p>전송 모드 = 페이로드(상위 계층 데이터)만 보호. IP 헤더는 암호화 안 됨.</p>
+    <div class="tq">"IPSec 전송모드는 원래의 IP 헤더에 새로운 IP 헤더를 추가한다" → <span class="vd wrong">✗ 오답</span> (2024 해경)</div>
+    <p>새 IP 헤더를 추가하는 것은 <strong>터널 모드</strong>. 전송 모드는 원래 IP 헤더 유지.</p>
+    <div class="tq">"IPSec의 전송모드는 IP패킷 전체를 보호한다" → <span class="vd wrong">✗ 오답</span> (2022 군무원)</div>
+    <p>전체 보호 = 터널 모드. 정답 선지: "IP 헤더를 보호하지 않으며 전송층에서 발송한 정보만 보호한다" → <span class="vd right">✓</span></p>
+  </div>
+</div>
+<div class="footer"><span>정보보안 합격전략 교재 · INHYUK PI</span><span>전송/터널 모드 탭</span></div>
+</div>
+
+<!-- ═══════════ TAB 5: SA · IKE ═══════════ -->
+<div class="tab-pane" id="tab-sa">
+<div class="sec-h"><div class="sec-num">1</div><div class="sec-title">SA · IKE · SAD</div><span class="sec-label l-def">Management</span></div>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-t">SA (Security Association)</div>
+    <div class="card-b">AH·ESP 사용을 위해 통신 양측이 협의하는 <strong>단방향 논리적 관계</strong>. 양방향 통신에는 SA가 2개 필요. (SPI, 목적지 주소, 프로토콜)로 식별.</div>
+  </div>
+  <div class="card">
+    <div class="card-t">IKE (Internet Key Exchange)</div>
+    <div class="card-b">IPSec SA를 <strong>자동으로 생성·협상</strong>하기 위한 프로토콜. ISAKMP 기반. <strong>SA 생성 = IKE</strong> 사용. OSPF가 아님!</div>
+  </div>
+  <div class="card">
+    <div class="card-t">SAD (Security Association Database)</div>
+    <div class="card-b">SA를 모아놓은 데이터베이스. 발신·수신 패킷 처리 시 해당 SA를 찾기 위해 참조.</div>
+  </div>
+  <div class="card">
+    <div class="card-t">ISAKMP</div>
+    <div class="card-b">Internet Security Association and Key Management Protocol. 인터넷에 대한 SA 관리 구조를 지원하고 프로토콜 제공. IKE가 SA 생성을 위해 사용.</div>
+  </div>
+</div>
+
+<!-- SA 시각 다이어그램 -->
+<div class="diagram-wrap">
+  <div class="diagram-title">SA 단방향 관계 — 양방향 통신에는 SA 2개 필요</div>
+  <svg viewBox="0 0 680 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+    <!-- 호스트 A -->
+    <rect x="20" y="30" width="120" height="60" rx="10" fill="#1a2540"/>
+    <text x="80" y="58" text-anchor="middle" fill="white" font-size="12" font-family="sans-serif" font-weight="700">Host A</text>
+    <text x="80" y="74" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif">송신측</text>
+    
+    <!-- 호스트 B -->
+    <rect x="540" y="30" width="120" height="60" rx="10" fill="#1a2540"/>
+    <text x="600" y="58" text-anchor="middle" fill="white" font-size="12" font-family="sans-serif" font-weight="700">Host B</text>
+    <text x="600" y="74" text-anchor="middle" fill="#7aa2f7" font-size="10" font-family="sans-serif">수신측</text>
+    
+    <!-- SA 1 (A→B) -->
+    <line x1="140" y1="48" x2="540" y2="48" stroke="#2d5be3" stroke-width="2"/>
+    <polygon points="540,44 552,48 540,52" fill="#2d5be3"/>
+    <rect x="290" y="28" width="100" height="22" rx="5" fill="#e8eeff" stroke="#2d5be3"/>
+    <text x="340" y="43" text-anchor="middle" fill="#2d5be3" font-size="10" font-family="sans-serif" font-weight="700">SA 1 (A→B)</text>
+    
+    <!-- SA 2 (B→A) -->
+    <line x1="540" y1="72" x2="140" y2="72" stroke="#6d28d9" stroke-width="2"/>
+    <polygon points="140,68 128,72 140,76" fill="#6d28d9"/>
+    <rect x="290" y="70" width="100" height="22" rx="5" fill="#ede9fe" stroke="#6d28d9"/>
+    <text x="340" y="85" text-anchor="middle" fill="#6d28d9" font-size="10" font-family="sans-serif" font-weight="700">SA 2 (B→A)</text>
+    
+    <!-- 설명 -->
+    <text x="340" y="112" text-anchor="middle" fill="#5a6478" font-size="10" font-family="sans-serif">양방향 보안 통신 = SA 2개 필요 (각 방향마다 1개)</text>
+  </svg>
+</div>
+
+<div class="tw"><table>
+  <thead><tr><th>SAD 인덱스</th><th>필드명</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td>SPI</td><td>Security Parameter Index</td><td>보안 매개변수 색인 (32 bits)</td></tr>
+    <tr><td>DA</td><td>목적지 주소 (Destination Address)</td><td>SA의 목적지 IP 주소</td></tr>
+    <tr><td>P</td><td>프로토콜 (Protocol)</td><td>AH 또는 ESP 구분</td></tr>
+    <tr><td>SN</td><td>Sequence Number</td><td>순서 번호 (재전송 방지)</td></tr>
+    <tr><td>ARW</td><td>Anti-Replay Window</td><td>재전송 공격 방지 윈도우</td></tr>
+    <tr><td>LT</td><td>LifeTime</td><td>SA 유효 기간</td></tr>
+    <tr><td>Mode</td><td>IPSec Mode Flag</td><td>전송/터널 모드 구분</td></tr>
+  </tbody>
+</table></div>
+
+<div class="trap">
+  <div class="trap-h"><span>⚠</span><span class="trap-ht">IKE 함정 — SA 생성에 "OSPF" 사용? (2020 국가직 7급)</span></div>
+  <div class="trap-b">
+    <p>2020 국가직 7급: "IPSec의 (㉠)는 발신지 인증과 데이터 무결성·기밀성을 제공. SA 생성을 위해 (㉡) 프로토콜을 사용"</p>
+    <div class="tq">㉠=ESP, ㉡=<strong>IKE</strong> → 정답 ③</div>
+    <p>오답 선지 ①·②: ㉡에 OSPF 삽입 → ✗. OSPF는 라우팅 프로토콜. SA 생성 = <strong>IKE</strong></p>
+    <p>2018 국가직 IPSec 오답: "IKE는 IPSec의 보안 연관(SA)을 수립하고 필요한 보안키 교환 기능을 제공하지만, <strong>인증서를 통한 개체 인증은 제공하지 않는다</strong>" → <span class="vd wrong">✗ 오답</span>. IKE는 인증서를 통한 인증도 지원함.</p>
+  </div>
+</div>
+<div class="footer"><span>정보보안 합격전략 교재 · INHYUK PI</span><span>SA·IKE 탭</span></div>
+</div>
+
+<!-- ═══════════ TAB 6: 기출문제 ═══════════ -->
+<div class="tab-pane" id="tab-exam">
+<div class="sec-h"><div class="sec-num">📝</div><div class="sec-title">기출문제 전수 해설 <span class="exam-count">8문제</span></div><span class="sec-label l-exam">연도순</span></div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2015 지방직 9급 · AH 설명 오답</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPSec에 대한 설명으로 <u>옳지 않은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① 네트워크 레이어에서 패킷을 보호하기 위한 프로토콜이다.</div>
+      <div class="opt opt-n">② 터널링을 통해 패킷들을 안전하게 전달하는 기능을 제공한다.</div>
+      <div class="opt opt-n">③ 전송 모드와 터널 모드를 지원한다.</div>
+      <div class="opt opt-w">④ AH(Authentication Header): 인증과 <u>암호화 부분</u>을 모두 수행한다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ④</strong> — AH는 <strong>인증·무결성·재전송 방지</strong>만 제공. <strong>암호화(기밀성)는 ESP만</strong> 제공. "AH가 암호화도 수행" → 오답.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2016 국가직 9급 · ESP에서만 제공하는 서비스</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPSec 프로토콜의 AH와 ESP에서 제공하는 보안서비스 중 <u>ESP에서만 제공하는</u> 보안서비스는?</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① 재전송 공격 방지 (Replay Attack Protection)</div>
+      <div class="opt opt-r">② 메시지 기밀성 (Confidentiality)</div>
+      <div class="opt opt-w">③ 메시지 무결성 (Integrity)</div>
+      <div class="opt opt-w">④ 개체 인증 (Entity Authentication)</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ②</strong> — 기밀성(암호화)=<strong>ESP만</strong>. 재전송방지·무결성·인증은 AH와 ESP 모두 제공. ④ 개체 인증도 AH·ESP 모두 가능. 이 문제는 IPSec 최빈출 유형으로 암기 필수.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2016 국가직 9급 네트워크보안 문19 · 터널 모드 헤더 추가</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPSec 터널모드에서 IP 패킷을 암호화하고 인증 기능을 수행하는 그림이다. ㉠과 ㉡에 추가되는 헤더 정보는?<br><br>IP header | data → ㉠ | ㉡ | IP header | data</div>
+    <div class="exam-opts">
+      <div class="opt opt-r">① ㉠ new IP header / ㉡ ESP/AH</div>
+      <div class="opt opt-w">② ㉠ ESP/AH / ㉡ new IP header</div>
+      <div class="opt opt-w">③ ㉠ IKE header / ㉡ new IP header</div>
+      <div class="opt opt-w">④ ㉠ new IP header / ㉡ IKE header</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ①</strong> — 터널 모드 패킷 구조: <strong>New IP Header | AH/ESP Header | Original IP Header | Data</strong>. 새 IP 헤더가 앞에 추가되고, 그 뒤에 IPSec(AH 또는 ESP) 헤더. IKE는 헤더가 아님.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2016 국회직 9급 · 전송 모드 IP헤더 암호화</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPsec에 대한 설명으로 <u>옳지 않은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① IPsec 정책 설정 과정에서 송·수신자의 IP주소를 입력한다.</div>
+      <div class="opt opt-n">② AH(Authentication Header) 프로토콜은 무결성을 제공한다.</div>
+      <div class="opt opt-w">③ 트랜스포트(Transport) 모드에서는 <u>IP헤더도 암호화된다</u>.</div>
+      <div class="opt opt-n">④ 재전송 공격을 막기 위해 IP패킷별로 순서번호를 부여한다.</div>
+      <div class="opt opt-n">⑤ IKE(Internet Key Exchange) 프로토콜로 세션키를 교환한다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ③</strong> — 전송 모드에서 암호화되는 것은 <strong>IP 페이로드(상위 계층 데이터)</strong>. <strong>IP 헤더는 암호화 안 됨</strong>. IP 헤더까지 암호화(보호)하는 것은 터널 모드.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2017 지방직 9급 · AH 기밀성 오답</span><span class="exam-star">★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPSec 표준은 패킷을 보호하기 위해 AH와 ESP로 구성된다. <u>옳지 않은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① AH 프로토콜의 페이로드 데이터와 패딩 내용은 <u>기밀성 범위에 속한다</u>.</div>
+      <div class="opt opt-n">② AH 프로토콜은 메시지의 무결성을 검사하고 재연(Replay) 공격 방지 서비스를 제공한다.</div>
+      <div class="opt opt-n">③ ESP 프로토콜은 메시지 인증 및 암호화를 제공한다.</div>
+      <div class="opt opt-n">④ ESP는 전송 및 터널 모드를 지원한다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ①</strong> — AH는 <strong>기밀성(암호화)을 제공하지 않는다</strong>. AH의 페이로드 데이터와 패딩은 인증 범위에 속하지 기밀성 범위에 속하지 않음. 기밀성 = ESP만의 기능.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2020 국가직 7급 · ESP + IKE 빈칸</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">괄호 안에 들어갈 용어를 바르게 연결한 것은?<br><br>IPSec의 ( ㉠ )는 발신지 인증과 데이터 무결성 그리고 <u>데이터 기밀성</u>을 제공한다. 두 호스트 사이의 논리적 관계인 SA(Security Association)를 생성하기 위하여 ( ㉡ ) 프로토콜을 사용하여 보안상 안전한 채널을 확보한다.</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① AH / OSPF</div>
+      <div class="opt opt-w">② AH / IKE</div>
+      <div class="opt opt-r">③ ESP / IKE</div>
+      <div class="opt opt-w">④ ESP / OSPF</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ③</strong> — ㉠: 기밀성(암호화) 포함 = <strong>ESP</strong>. ㉡: SA 생성 = <strong>IKE</strong>. OSPF는 라우팅 프로토콜이므로 오답. AH는 기밀성 없음.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2022 군무원 9급 · 전송 모드 옳은 설명</span><span class="exam-star">★★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPSec의 전송모드에 대한 설명으로 <u>가장 옳은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-w">① IP패킷 전체를 보호한다.</div>
+      <div class="opt opt-r">② IP헤더를 보호하지 않으며 전송층에서 발송한 정보만 보호한다.</div>
+      <div class="opt opt-w">③ IP패킷 전체를 보호한 후에 새로운 IP헤더를 추가한다.</div>
+      <div class="opt opt-w">④ 전송층에서 온 정보에 IP헤더만 추가하고 IPSec헤더를 나중에 추가한다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ②</strong> — 전송 모드: IP 헤더 보호 안 함, 전송층(TCP/UDP) 이상 정보만 보호. ①③은 터널 모드 설명. ④는 잘못된 서술.</div>
+  </div>
+</div>
+
+<div class="exam-card">
+  <div class="exam-h"><span class="exam-yr">📄 2023 지방직 9급 · 터널 모드 VPN + ESP 암호화 범위</span><span class="exam-star">★★</span></div>
+  <div class="exam-body">
+    <div class="exam-q">IPSec의 터널 모드를 이용한 VPN에 대한 설명으로 <u>옳지 않은 것</u>은?</div>
+    <div class="exam-opts">
+      <div class="opt opt-n">① 양측 호스트 IP 주소를 숨기고 새로운 IP 헤더에 VPN 게이트웨이 IP를 넣는다.</div>
+      <div class="opt opt-n">② 터널 모드는 새로운 IP 헤더를 추가하기 때문에 전송 모드 대비 전체 패킷이 길어진다.</div>
+      <div class="opt opt-w">③ ESP는 원래 IP 패킷 전부와 <u>원래 IP 패킷 앞뒤로 붙는 ESP 헤더와 트레일러를 모두 암호화</u>한다.</div>
+      <div class="opt opt-n">④ ESP 인증 데이터는 패킷의 끝에 추가되며, 터널 모드의 경우 인증은 목적지 게이트웨이에서 이루어진다.</div>
+    </div>
+    <div class="exam-exp"><strong>정답 ③</strong> — 터널 모드 ESP 암호화 범위: 원래 IP패킷(헤더+페이로드) + ESP 트레일러. <strong>ESP 헤더 자체는 암호화 안 됨</strong>(SPI·Seq# 읽을 수 있어야 함). ESP Auth도 암호화 범위 밖.</div>
+  </div>
+</div>
+<div class="footer"><span>정보보안 합격전략 교재 · INHYUK PI</span><span>기출문제 탭</span></div>
+</div>
+
+<!-- ═══════════ TAB 7: 암기 ═══════════ -->
+<div class="tab-pane" id="tab-summary">
+<div class="sec-h"><div class="sec-num">💡</div><div class="sec-title">핵심 암기 카드</div><span class="sec-label l-tip">시험 직전</span></div>
+
+<!-- AH vs ESP 시각 비교 -->
+<div class="diagram-wrap">
+  <div class="diagram-title">AH vs ESP — 서비스 비교 한눈에</div>
+  <svg viewBox="0 0 680 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+    <!-- AH 박스 -->
+    <rect x="20" y="10" width="290" height="160" rx="12" fill="#e8eeff" stroke="#2d5be3" stroke-width="2"/>
+    <text x="165" y="36" text-anchor="middle" fill="#2d5be3" font-size="14" font-family="sans-serif" font-weight="700">AH (인증 헤더)</text>
+    <text x="165" y="52" text-anchor="middle" fill="#5a6478" font-size="10" font-family="sans-serif">RFC 2402</text>
+    
+    <text x="45" y="76" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 접근 제어</text>
+    <text x="45" y="96" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 비연결 무결성</text>
+    <text x="45" y="116" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 데이터 발신처 인증</text>
+    <text x="45" y="136" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 재전송 방지 (Anti-Replay)</text>
+    <text x="45" y="158" fill="#c0392b" font-size="13" font-family="sans-serif" font-weight="700">✗ 기밀성 (암호화 없음!)</text>
+    
+    <!-- ESP 박스 -->
+    <rect x="370" y="10" width="290" height="160" rx="12" fill="#ede9fe" stroke="#6d28d9" stroke-width="2"/>
+    <text x="515" y="36" text-anchor="middle" fill="#6d28d9" font-size="14" font-family="sans-serif" font-weight="700">ESP (캡슐화 보안 페이로드)</text>
+    <text x="515" y="52" text-anchor="middle" fill="#5a6478" font-size="10" font-family="sans-serif">RFC 2406</text>
+    
+    <text x="395" y="76" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 접근 제어</text>
+    <text x="395" y="96" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 비연결 무결성</text>
+    <text x="395" y="116" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 데이터 발신처 인증</text>
+    <text x="395" y="136" fill="#1a7a4a" font-size="12" font-family="sans-serif">✓ 재전송 방지 (Anti-Replay)</text>
+    <rect x="390" y="145" width="255" height="20" rx="6" fill="#6d28d9"/>
+    <text x="517" y="159" text-anchor="middle" fill="white" font-size="13" font-family="sans-serif" font-weight="700">✓ 기밀성 (암호화) ← ESP만!</text>
+  </svg>
+</div>
+
+<div class="mem">
+  <div class="mem-t">💡 IPSec 핵심 암기</div>
+  <div class="mem-items">
+    <div class="mem-item"><span class="mem-k">기밀성</span><span class="mem-v"><strong>ESP만</strong> 제공. AH는 기밀성(암호화) 없음.</span></div>
+    <div class="mem-item"><span class="mem-k">AH vs ESP</span><span class="mem-v">AH=인증·무결성·재전송방지 / ESP=<strong>기밀성+인증+무결성+재전송방지</strong></span></div>
+    <div class="mem-item"><span class="mem-k">전송 모드</span><span class="mem-v">IP 페이로드만 보호. <strong>IP 헤더 보호 안 함</strong>. 새 IP헤더 추가 없음.</span></div>
+    <div class="mem-item"><span class="mem-k">터널 모드</span><span class="mem-v">전체 IP 패킷 보호. <strong>새 IP 헤더 추가</strong> (원래와 다른 정보). VPN에 주로 사용.</span></div>
+    <div class="mem-item"><span class="mem-k">SA 생성</span><span class="mem-v">SA 생성 = <strong>IKE</strong> (OSPF 아님!). SA는 단방향 — 양방향 통신 시 SA 2개.</span></div>
+    <div class="mem-item"><span class="mem-k">계층</span><span class="mem-v">IPSec = <strong>3층(네트워크층)</strong>. SSL = 4층. SOCKSv5 = 5층.</span></div>
+    <div class="mem-item"><span class="mem-k">알고리즘</span><span class="mem-v">다양한 알고리즘 지원. <strong>"신규 알고리즘 적용 불가" → ✗ 오답</strong></span></div>
+    <div class="mem-item"><span class="mem-k">RFC</span><span class="mem-v">구조=2401 / AH=2402 / ESP=2406 / IKE=2409</span></div>
+  </div>
+</div>
+
+<ul class="cl">
+  <li class="cl-w">"AH는 암호화(기밀성)도 제공한다" → ✗ (ESP만 기밀성)</li>
+  <li class="cl-w">"AH의 페이로드가 기밀성 범위에 속한다" → ✗</li>
+  <li class="cl-w">"전송 모드에서 IP 헤더도 암호화된다" → ✗ (페이로드만)</li>
+  <li class="cl-w">"전송 모드에서 새 IP 헤더를 추가한다" → ✗ (터널 모드)</li>
+  <li class="cl-w">"SA 생성에 OSPF 프로토콜을 사용한다" → ✗ (IKE 사용)</li>
+  <li class="cl-w">"IPSec은 암호화/인증방식이 지정되어 신규 알고리즘 적용 불가" → ✗</li>
+  <li class="cl-r">"ESP에서만 제공하는 서비스 = 기밀성(암호화)" → ✓</li>
+  <li class="cl-r">"터널 모드 패킷 = New IP 헤더 + AH/ESP 헤더 + 원래 IP 패킷 전체" → ✓</li>
+  <li class="cl-r">"터널 모드는 전송 모드보다 패킷이 길어진다(새 IP 헤더 추가)" → ✓</li>
+  <li class="cl-r">"SA는 단방향, 양방향 통신에는 2개 필요" → ✓</li>
+</ul>
+
+<div class="tw"><table>
+  <thead><tr><th>출제 포인트</th><th>빈출도</th><th>주요 함정</th></tr></thead>
+  <tbody>
+    <tr><td>AH vs ESP 기밀성 제공 여부</td><td><span class="sf">★★★</span></td><td>"AH도 기밀성 제공", "AH=암호화 ESP=인증" 반전 서술</td></tr>
+    <tr><td>전송 모드 보호 범위</td><td><span class="sf">★★★</span></td><td>"IP헤더도 암호화", "전체 보호", "새 IP헤더 추가" 오서술</td></tr>
+    <tr><td>터널 모드 구조</td><td><span class="sf">★★★</span></td><td>새 IP헤더 위치, ESP/AH 헤더 순서 혼동</td></tr>
+    <tr><td>SA 생성 프로토콜</td><td><span class="sf">★★</span></td><td>IKE 대신 OSPF 삽입</td></tr>
+    <tr><td>ESP에서만 제공하는 서비스</td><td><span class="sf">★★★</span></td><td>재전송방지·무결성을 ESP만 제공이라 서술 → 실제는 AH도 제공</td></tr>
+    <tr><td>CCS vs IPSec 구성 요소</td><td><span class="sf">★★</span></td><td>CCS(SSL 구성요소)를 IPSec 구성요소로 서술</td></tr>
+  </tbody>
+</table></div>
+
+<div class="footer">
+  <span>정보보안 합격전략 교재 · INHYUK PI</span>
+  <span>Chapter 07 · IPSec 완전 교재 · 2026 목표</span>
+</div>
+</div>
+
+</div><!-- /content-card -->
+</div><!-- /wrap -->
+
+<script>
+function sw(id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

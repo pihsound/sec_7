@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>침입 차단 시스템 분류 완전 학습자료</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--bg2:#0d1117;--bg3:#141c27;--bg4:#1c2535;
+  --border:#1f2d3d;--border2:#2a3d52;
+  --text:#e4eef8;--text2:#6b8099;--text3:#a8bdd4;
+  --fw:#f97316;--allow:#22c55e;--deny:#ef4444;
+  --blue:#3b82f6;--cyan:#06b6d4;--gold:#f0a500;
+  --purple:#a78bfa;--pink:#ec4899;--amber:#f59e0b;
+
+  /* 분류별 색상 */
+  --c-pf:#f97316;   /* 패킷필터 */
+  --c-sl:#06b6d4;   /* 회선레벨 */
+  --c-al:#a78bfa;   /* 응용레벨 */
+  --c-hyb:#ec4899;  /* 혼합형 */
+  --c-ba:#22c55e;   /* 배스천 */
+  --c-sc:#f59e0b;   /* 스크린드 */
+  --c-sh:#3b82f6;   /* 스크린드 호스트 */
+  --c-ss:#ef4444;   /* 이중 홈 */
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:1.85;}
+
+/* HERO */
+.hero{
+  padding:60px 28px 50px;text-align:center;
+  background:linear-gradient(180deg,#06040e 0%,#0d1117 100%);
+  border-bottom:2px solid rgba(249,115,22,.3);
+  position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 65% at 30% 50%,rgba(249,115,22,.08),transparent 60%),
+             radial-gradient(ellipse 45% 55% at 75% 50%,rgba(6,182,212,.06),transparent 60%);}
+.hero::after{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(249,115,22,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(249,115,22,.025) 1px,transparent 1px);
+  background-size:40px 40px;}
+.hero-inner{position:relative;z-index:1;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.35);
+  color:var(--fw);font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:3px;padding:5px 18px;
+  border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:40px;font-weight:900;color:#fff;margin-bottom:14px;line-height:1.2;}
+.hero h1 em{color:var(--fw);font-style:normal;}
+.hero h1 .em2{color:var(--cyan);font-style:normal;}
+.hero-sub{color:var(--text2);font-size:14.5px;max-width:620px;margin:0 auto 24px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.hpill{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:700;
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text3);}
+
+/* NAV */
+.snav{position:sticky;top:0;z-index:200;background:rgba(7,9,15,.97);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+  padding:0 16px;overflow-x:auto;white-space:nowrap;}
+.snav::-webkit-scrollbar{height:3px;}
+.snav::-webkit-scrollbar-thumb{background:rgba(249,115,22,.4);}
+.snav-inner{display:inline-flex;}
+.snav a{display:inline-block;padding:12px 14px;font-size:12px;font-weight:700;
+  color:var(--text2);text-decoration:none;border-bottom:2px solid transparent;transition:all .2s;}
+.snav a:hover{color:var(--fw);border-bottom-color:var(--fw);}
+
+/* WRAP */
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+
+/* SECTION */
+.sec{padding:52px 0 12px;}
+.sec-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:28px;
+  padding-bottom:20px;border-bottom:1px solid var(--border2);}
+.sec-icon{width:52px;height:52px;min-width:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid;}
+.sec-meta .sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:3px;opacity:.5;margin-bottom:5px;}
+.sec-meta h2{font-size:24px;font-weight:900;color:#fff;margin-bottom:6px;}
+.sec-meta .sec-desc{font-size:13px;color:var(--text2);}
+.sub{font-size:15px;font-weight:700;color:var(--text);margin:24px 0 12px;
+  padding-left:12px;border-left:3px solid var(--fw);}
+p{color:var(--text3);margin-bottom:11px;line-height:1.9;}
+strong{color:var(--gold);font-weight:700;}
+ul{padding-left:22px;margin-bottom:11px;color:var(--text3);}
+li{margin-bottom:6px;line-height:1.8;}
+li::marker{color:var(--fw);}
+code{font-family:'JetBrains Mono',monospace;background:var(--bg3);
+  padding:2px 6px;border-radius:3px;font-size:12.5px;color:var(--fw);}
+
+/* TABLE */
+.tw{overflow-x:auto;margin:14px 0;border-radius:8px;border:1px solid var(--border2);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead th{background:var(--bg3);color:var(--gold);font-weight:700;
+  padding:11px 14px;text-align:left;border-bottom:2px solid var(--border2);}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,.015);}
+tbody td{padding:10px 14px;color:var(--text3);vertical-align:top;}
+.tk{font-weight:700;color:var(--text);}
+.tg{color:var(--allow);font-weight:700;}
+.tr{color:var(--deny);font-weight:700;}
+.ty{color:var(--gold);font-weight:700;}
+
+/* BOXES */
+.box{border-radius:8px;padding:16px 20px;margin:13px 0;font-size:14px;}
+.bt{font-weight:700;font-size:13px;margin-bottom:7px;}
+.bx-o{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.25);}
+.bx-o .bt{color:var(--fw);}
+.bx-g{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);}
+.bx-g .bt{color:var(--allow);}
+.bx-r{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);}
+.bx-r .bt{color:var(--deny);}
+.bx-y{background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.25);}
+.bx-y .bt{color:var(--gold);}
+.bx-c{background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.25);}
+.bx-c .bt{color:var(--cyan);}
+
+/* ═══════════════════
+   MIND MAP (분류 전체)
+═══════════════════ */
+.mindmap-wrap{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:14px;padding:28px;margin:18px 0;overflow-x:auto;
+}
+.mm-title{font-size:11px;font-weight:700;color:var(--text2);
+  letter-spacing:2px;margin-bottom:20px;font-family:'JetBrains Mono',monospace;}
+.mm-center{
+  display:flex;justify-content:center;margin-bottom:24px;
+}
+.mm-root{
+  background:linear-gradient(135deg,rgba(249,115,22,.3),rgba(249,115,22,.1));
+  border:2px solid var(--fw);border-radius:12px;
+  padding:14px 24px;font-size:15px;font-weight:900;color:#fff;
+  text-align:center;box-shadow:0 0 24px rgba(249,115,22,.25);
+}
+.mm-branches{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.mm-branch{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  position:relative;flex:1;min-width:260px;max-width:340px;
+}
+.mm-branch::before{
+  content:'';position:absolute;top:-16px;left:50%;
+  width:2px;height:16px;background:var(--border2);
+}
+.mm-branch-head{
+  border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;
+  text-align:center;border:1px solid;margin-bottom:8px;
+  position:relative;
+}
+.mm-branch-head::before{
+  content:'';position:absolute;top:-8px;left:50%;
+  width:2px;height:8px;
+}
+.mm-leaves{display:flex;flex-direction:column;gap:6px;width:100%;}
+.mm-leaf{
+  border-radius:6px;padding:8px 14px;font-size:12.5px;
+  border:1px solid;text-align:center;
+  transition:transform .2s;cursor:default;
+}
+.mm-leaf:hover{transform:scale(1.02);}
+/* branch 1 — 차단 방법 */
+.b1 .mm-branch-head{background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.35);color:var(--fw);}
+.b1 .mm-branch-head::before{background:var(--fw);}
+/* branch 2 — 구성 방법 */
+.b2 .mm-branch-head{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.35);color:var(--cyan);}
+.b2 .mm-branch-head::before{background:var(--cyan);}
+
+/* ═══════════════════
+   CLASSIFICATION CARDS (차단 방법)
+═══════════════════ */
+.cls-grid{display:flex;flex-direction:column;gap:16px;margin:16px 0;}
+.cls-card{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:12px;overflow:hidden;
+  border-left:4px solid;
+  transition:border-color .2s,box-shadow .2s;
+}
+.cls-card:hover{box-shadow:0 4px 24px rgba(0,0,0,.3);}
+.cls-head{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 22px;border-bottom:1px solid var(--border2);
+}
+.cls-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:4px;letter-spacing:1px;
+}
+.cls-icon{font-size:26px;}
+.cls-title-group{}
+.cls-name-ko{font-size:17px;font-weight:900;color:#fff;margin-bottom:2px;}
+.cls-name-en{font-size:12px;color:var(--text2);}
+.cls-layer{
+  margin-left:auto;font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:700;padding:4px 12px;
+  border-radius:20px;white-space:nowrap;
+}
+.cls-body{padding:18px 22px;}
+.cls-desc{font-size:13.5px;color:var(--text3);line-height:1.8;margin-bottom:14px;}
+.cls-row{display:flex;gap:16px;flex-wrap:wrap;}
+.cls-pros,.cls-cons{flex:1;min-width:180px;}
+.cls-pros-title{font-size:11px;font-weight:700;color:var(--allow);
+  letter-spacing:1px;margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
+.cls-cons-title{font-size:11px;font-weight:700;color:var(--deny);
+  letter-spacing:1px;margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
+.pro-item,.con-item{
+  font-size:12.5px;color:var(--text3);padding:3px 0;
+  display:flex;gap:6px;align-items:flex-start;
+}
+.pro-dot{color:var(--allow);font-size:13px;margin-top:1px;}
+.con-dot{color:var(--deny);font-size:13px;margin-top:1px;}
+.cls-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;}
+.cls-tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:4px;
+  font-family:'JetBrains Mono',monospace;}
+
+/* ═══════════════════
+   NETWORK DIAGRAM (구성 방법)
+═══════════════════ */
+.net-diagram{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:12px;padding:24px;margin:16px 0;
+  overflow-x:auto;
+}
+.nd-title{font-size:11px;font-weight:700;color:var(--text2);
+  letter-spacing:2px;margin-bottom:18px;font-family:'JetBrains Mono',monospace;}
+
+/* 공통 네트워크 요소 */
+.net{display:flex;align-items:center;justify-content:center;
+  gap:4px;flex-wrap:nowrap;min-width:480px;}
+.n-box{
+  border-radius:8px;padding:10px 12px;text-align:center;
+  border:1px solid;min-width:72px;font-size:11px;
+  font-family:'JetBrains Mono',monospace;font-weight:700;
+}
+.n-arrow{font-size:20px;color:var(--text2);flex-shrink:0;padding:0 2px;}
+.n-arrow-bi{font-size:20px;color:var(--text2);flex-shrink:0;}
+.n-internet{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:var(--deny);}
+.n-router{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3);color:var(--amber);}
+.n-fw{
+  background:linear-gradient(180deg,rgba(249,115,22,.25),rgba(249,115,22,.1));
+  border:2px solid var(--fw);color:var(--fw);
+  box-shadow:0 0 12px rgba(249,115,22,.2);
+  font-size:18px;width:44px;height:60px;min-width:44px;
+  padding:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;border-radius:6px;
+}
+.n-fw-label{font-size:9px;font-weight:700;color:var(--fw);}
+.n-dmz{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3);color:var(--amber);}
+.n-server{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);color:var(--blue);}
+.n-bastionhost{background:rgba(34,197,94,.1);border:2px solid rgba(34,197,94,.4);color:var(--allow);}
+.n-internal{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.25);color:var(--allow);}
+.n-label{font-size:9px;color:var(--text2);margin-top:2px;}
+
+/* config card */
+.cfg-card{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:12px;overflow:hidden;margin-bottom:28px;
+}
+.cfg-head{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 22px;border-bottom:1px solid var(--border2);
+}
+.cfg-num-badge{font-family:'JetBrains Mono',monospace;font-size:10px;
+  font-weight:700;letter-spacing:2px;padding:3px 10px;border-radius:4px;}
+.cfg-icon{font-size:24px;}
+.cfg-title{font-size:17px;font-weight:900;color:#fff;margin-bottom:2px;}
+.cfg-en{font-size:12px;color:var(--text2);}
+.cfg-body{padding:18px 22px;}
+.cfg-desc{font-size:13.5px;color:var(--text3);line-height:1.8;margin-bottom:16px;}
+.cfg-feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.cfg-feat{background:var(--bg3);border:1px solid var(--border2);
+  border-radius:6px;padding:10px 14px;}
+.cfg-feat-label{font-size:11px;color:var(--text2);margin-bottom:3px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
+.cfg-feat-val{font-size:13px;font-weight:700;}
+
+/* COMPARISON TABLE */
+.cmp-full{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:10px;overflow:hidden;margin:16px 0;
+}
+.cmp-full-head{
+  background:var(--bg3);display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr 1fr;
+  padding:10px 16px;border-bottom:2px solid var(--border2);
+  font-size:11px;font-weight:700;color:var(--gold);
+  font-family:'JetBrains Mono',monospace;letter-spacing:1px;
+  gap:8px;
+}
+.cmp-full-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  font-size:12.5px;gap:8px;align-items:center;
+}
+.cmp-full-row:last-child{border-bottom:none;}
+.cmp-full-row:hover{background:rgba(255,255,255,.02);}
+.cmp-label{font-weight:700;color:var(--text3);}
+
+/* QUIZ */
+.quiz-wrap{
+  background:linear-gradient(135deg,rgba(249,115,22,.07),rgba(249,115,22,.02));
+  border:2px solid rgba(249,115,22,.3);border-radius:12px;
+  padding:24px 26px;margin:32px 0;
+}
+.quiz-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.quiz-badge{background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);
+  color:var(--fw);font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:4px;font-weight:700;}
+.quiz-title{font-size:15px;font-weight:900;color:var(--fw);}
+.q-item{background:var(--bg2);border:1px solid var(--border2);
+  border-radius:8px;padding:17px 20px;margin-bottom:10px;}
+.q-item:last-child{margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--fw);font-weight:700;margin-bottom:7px;}
+.q-text{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1.65;}
+.q-options{display:flex;flex-direction:column;gap:6px;margin-bottom:11px;}
+.q-opt{padding:9px 13px;border-radius:6px;border:1px solid var(--border2);
+  font-size:13.5px;color:var(--text3);cursor:pointer;transition:all .2s;
+  display:flex;align-items:flex-start;gap:9px;}
+.q-opt:hover:not(.disabled){border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.04);}
+.q-opt.correct{background:rgba(34,197,94,.11);border-color:rgba(34,197,94,.5);color:var(--allow);}
+.q-opt.wrong{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.4);color:var(--deny);}
+.q-opt.disabled{cursor:default;pointer-events:none;}
+.opt-letter{width:22px;height:22px;min-width:22px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  margin-top:1px;flex-shrink:0;}
+.q-explain{display:none;background:var(--bg3);border-left:3px solid var(--allow);
+  border-radius:0 6px 6px 0;padding:11px 15px;font-size:13px;color:var(--text3);
+  line-height:1.7;margin-top:2px;}
+.q-explain.show{display:block;}
+.ex-title{color:var(--allow);font-weight:700;margin-bottom:5px;font-size:12px;}
+.q-btn{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);
+  color:var(--fw);border-radius:6px;padding:6px 14px;font-size:12.5px;font-weight:700;
+  cursor:pointer;transition:all .2s;border:1px solid;font-family:'Noto Sans KR',sans-serif;margin-top:3px;}
+.q-btn:hover{background:rgba(249,115,22,.2);}
+.q-btn:disabled{opacity:.4;cursor:default;}
+
+/* MISC */
+.div{border:none;border-top:1px solid var(--border2);margin:50px 0 0;}
+.hy{background:rgba(240,165,0,.15);padding:1px 5px;border-radius:3px;color:var(--gold);}
+.hr{background:rgba(239,68,68,.15);padding:1px 5px;border-radius:3px;color:var(--deny);}
+.hg{background:rgba(34,197,94,.15);padding:1px 5px;border-radius:3px;color:var(--allow);}
+.hc{background:rgba(6,182,212,.15);padding:1px 5px;border-radius:3px;color:var(--cyan);}
+.ho{background:rgba(249,115,22,.15);padding:1px 5px;border-radius:3px;color:var(--fw);}
+.stb{position:fixed;bottom:26px;right:26px;background:var(--fw);color:#fff;
+  border:none;border-radius:50%;width:44px;height:44px;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(249,115,22,.45);transition:transform .2s;z-index:999;}
+.stb:hover{transform:translateY(-3px);}
+
+@media(max-width:700px){
+  .hero h1{font-size:26px;}
+  .cfg-feature-grid{grid-template-columns:1fr;}
+  .cmp-full-head,.cmp-full-row{grid-template-columns:1fr 1fr 1fr;}
+  .wrap{padding:0 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🔥 FIREWALL CLASSIFICATION</div>
+    <h1>침입 차단 시스템<br><em>차단 방법</em>에 따른 분류<br><span class="em2">구성 방법</span>에 따른 분류</h1>
+    <p class="hero-sub">패킷 필터링·회선 레벨·응용 레벨·혼합형 (4종 차단 방법)<br>배스천 호스트·스크린드 서브넷·스크린드 호스트·이중 홈 (4종 구성 방법)</p>
+    <div class="hero-pills">
+      <span class="hpill">📦 패킷 필터링 게이트웨이</span>
+      <span class="hpill">🔗 회선 레벨 게이트웨이</span>
+      <span class="hpill">🔍 응용 레벨 게이트웨이</span>
+      <span class="hpill">🔀 혼합형</span>
+      <span class="hpill">🏰 배스천 호스트</span>
+      <span class="hpill">🛡️ 스크린드 서브넷</span>
+      <span class="hpill">🔑 스크린드 호스트</span>
+      <span class="hpill">🏠 이중 홈 게이트웨이</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="snav">
+  <div class="snav-inner">
+    <a href="#overview">전체 분류</a>
+    <a href="#block">차단 방법 분류</a>
+    <a href="#b1">패킷 필터링</a>
+    <a href="#b2">회선 레벨</a>
+    <a href="#b3">응용 레벨</a>
+    <a href="#b4">혼합형</a>
+    <a href="#config">구성 방법 분류</a>
+    <a href="#c1">배스천 호스트</a>
+    <a href="#c2">스크린드 서브넷</a>
+    <a href="#c3">스크린드 호스트</a>
+    <a href="#c4">이중 홈</a>
+    <a href="#compare">전체 비교</a>
+    <a href="#quiz">기출 문제</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ═══════════════
+     전체 분류 개요
+═══════════════ -->
+<div class="sec" id="overview">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.4);">🗺️</div>
+    <div class="sec-meta">
+      <div class="sec-num">OVERVIEW</div>
+      <h2>침입 차단 시스템 분류 전체 구조</h2>
+      <div class="sec-desc">두 가지 기준으로 나뉘는 방화벽 분류 체계</div>
+    </div>
+  </div>
+
+  <!-- 마인드맵 -->
+  <div class="mindmap-wrap">
+    <div class="mm-title">▶ 침입 차단 시스템 분류 체계</div>
+    <div class="mm-center">
+      <div class="mm-root">🔥 침입 차단 시스템<br><span style="font-size:12px;opacity:.7;">(방화벽)</span></div>
+    </div>
+    <div class="mm-branches">
+      <!-- 차단 방법 -->
+      <div class="mm-branch b1">
+        <div class="mm-branch-head">📦 차단 방법에 따른 분류</div>
+        <div class="mm-leaves">
+          <div class="mm-leaf" style="background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.3);color:var(--fw);">
+            ① 패킷 필터링 게이트웨이
+          </div>
+          <div class="mm-leaf" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--cyan);">
+            ② 회선 레벨 게이트웨이
+          </div>
+          <div class="mm-leaf" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--purple);">
+            ③ 응용 레벨 게이트웨이 (프록시)
+          </div>
+          <div class="mm-leaf" style="background:rgba(236,72,153,.1);border-color:rgba(236,72,153,.3);color:var(--pink);">
+            ④ 혼합형 게이트웨이
+          </div>
+        </div>
+      </div>
+      <!-- 구성 방법 -->
+      <div class="mm-branch b2">
+        <div class="mm-branch-head">🏢 구성 방법에 따른 분류</div>
+        <div class="mm-leaves">
+          <div class="mm-leaf" style="background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--allow);">
+            ① 배스천 호스트 (Bastion Host)
+          </div>
+          <div class="mm-leaf" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--amber);">
+            ② 스크린드 서브넷 (Screened Subnet)
+          </div>
+          <div class="mm-leaf" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--blue);">
+            ③ 스크린드 호스트 (Screened Host)
+          </div>
+          <div class="mm-leaf" style="background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--deny);">
+            ④ 이중 홈 게이트웨이 (Dual-Homed GW)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ═══════════════════════════════════
+     PART 1. 차단 방법에 따른 분류
+═══════════════════════════════════ -->
+<div class="sec" id="block">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.4);">📦</div>
+    <div class="sec-meta">
+      <div class="sec-num">PART 01</div>
+      <h2>차단 방법에 따른 분류</h2>
+      <div class="sec-desc">패킷을 어느 계층에서, 어떤 방식으로 검사하고 차단하는가</div>
+    </div>
+  </div>
+
+  <!-- ① 패킷 필터링 -->
+  <div class="cls-card" id="b1" style="border-left-color:var(--c-pf);">
+    <div class="cls-head">
+      <span class="cls-num" style="background:rgba(249,115,22,.12);color:var(--fw);">TYPE 01</span>
+      <span class="cls-icon">📦</span>
+      <div class="cls-title-group">
+        <div class="cls-name-ko">패킷 필터링 게이트웨이</div>
+        <div class="cls-name-en">Packet Filtering Gateway</div>
+      </div>
+      <span class="cls-layer" style="background:rgba(249,115,22,.1);color:var(--fw);">L3·L4 동작</span>
+    </div>
+    <div class="cls-body">
+      <!-- 동작 다이어그램 -->
+      <div class="net-diagram" style="margin-bottom:14px;">
+        <div class="nd-title">▶ 패킷 필터링 동작 구조</div>
+        <div class="net">
+          <div>
+            <div class="n-box n-internet">🌍<div class="n-label">인터넷</div></div>
+          </div>
+          <div class="n-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <div class="n-fw">🧱<div class="n-fw-label">PF</div></div>
+            <div style="font-size:9px;color:var(--fw);font-family:'JetBrains Mono',monospace;">패킷 필터</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="width:30px;height:2px;background:var(--allow);position:relative;">
+                <span style="position:absolute;right:-6px;top:-5px;color:var(--allow);font-size:10px;">▶</span>
+              </div>
+              <div style="font-size:10px;color:var(--allow);font-family:'JetBrains Mono',monospace;">PERMIT</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="width:30px;height:2px;background:var(--deny);position:relative;">
+                <span style="position:absolute;right:-6px;top:-5px;color:var(--deny);font-size:10px;">✕</span>
+              </div>
+              <div style="font-size:10px;color:var(--deny);font-family:'JetBrains Mono',monospace;">DENY</div>
+            </div>
+          </div>
+          <div>
+            <div class="n-box n-internal">🏠<div class="n-label">내부망</div></div>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);
+            border-radius:6px;padding:8px 14px;font-size:12px;color:var(--text3);">
+            🔍 검사 항목: <strong style="color:var(--fw)">출발지 IP · 목적지 IP · 포트 · 프로토콜 · 방향</strong>
+          </div>
+          <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);
+            border-radius:6px;padding:8px 14px;font-size:12px;color:var(--text3);">
+            ❌ 검사 안 함: <span style="color:var(--deny)">패킷 내용(페이로드) · 연결 상태 · 사용자 정보</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cls-desc">
+        IP 헤더와 TCP/UDP 헤더의 <strong>출발지·목적지 IP 주소, 포트 번호, 프로토콜</strong>만 검사하여 허용/차단한다.
+        라우터에 내장되거나 독립 장비로 구성된다. 각 패킷을 <strong>독립적으로(Stateless)</strong> 처리하며
+        연결 상태를 추적하지 않는다. 처리 속도가 가장 빠르고 가격이 저렴하여 1차 방어선으로 많이 사용된다.
+      </div>
+      <div class="cls-row">
+        <div class="cls-pros">
+          <div class="cls-pros-title">✓ 장점</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>처리 속도 가장 빠름</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>구현 비용 저렴</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>라우터 ACL로 간단 구현</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>애플리케이션에 독립적</div>
+        </div>
+        <div class="cls-cons">
+          <div class="cls-cons-title">✗ 단점</div>
+          <div class="con-item"><span class="con-dot">✗</span>IP 스푸핑에 취약</div>
+          <div class="con-item"><span class="con-dot">✗</span>연결 상태 미추적 (Stateless)</div>
+          <div class="con-item"><span class="con-dot">✗</span>패킷 내용(페이로드) 미검사</div>
+          <div class="con-item"><span class="con-dot">✗</span>단편화 공격에 취약</div>
+          <div class="con-item"><span class="con-dot">✗</span>로깅·감사 기능 미약</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(249,115,22,.12);color:var(--fw);">ACL 기반</span>
+        <span class="cls-tag" style="background:rgba(249,115,22,.12);color:var(--fw);">Stateless</span>
+        <span class="cls-tag" style="background:rgba(249,115,22,.12);color:var(--fw);">라우터 통합</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">속도 최고</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">보안 낮음</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 회선 레벨 -->
+  <div class="cls-card" id="b2" style="border-left-color:var(--c-sl);">
+    <div class="cls-head">
+      <span class="cls-num" style="background:rgba(6,182,212,.1);color:var(--cyan);">TYPE 02</span>
+      <span class="cls-icon">🔗</span>
+      <div class="cls-title-group">
+        <div class="cls-name-ko">회선 레벨 게이트웨이</div>
+        <div class="cls-name-en">Circuit Level Gateway</div>
+      </div>
+      <span class="cls-layer" style="background:rgba(6,182,212,.1);color:var(--cyan);">L5 세션 계층</span>
+    </div>
+    <div class="cls-body">
+      <!-- 동작 다이어그램 -->
+      <div class="net-diagram" style="margin-bottom:14px;">
+        <div class="nd-title">▶ 회선 레벨 게이트웨이 — TCP 핸드셰이크 중계 구조</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:8px 0;">
+          <div style="text-align:center;">
+            <div class="n-box n-internet" style="margin-bottom:4px;">🖥️ 클라이언트</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <div style="font-size:10px;color:var(--cyan);font-family:'JetBrains Mono',monospace;">① SYN</div>
+            <div style="width:50px;height:2px;background:var(--cyan);position:relative;">
+              <span style="position:absolute;right:-6px;top:-5px;color:var(--cyan);">▶</span>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div style="background:rgba(6,182,212,.15);border:2px solid var(--cyan);border-radius:10px;
+              padding:12px 14px;box-shadow:0 0 14px rgba(6,182,212,.2);">
+              <div style="font-size:18px;margin-bottom:4px;">🔗</div>
+              <div style="font-size:11px;font-weight:700;color:var(--cyan);">회선 레벨<br>게이트웨이</div>
+              <div style="font-size:9px;color:var(--text2);margin-top:3px;">TCP 상태 검증<br>SOCKS 프록시</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <div style="font-size:10px;color:var(--cyan);font-family:'JetBrains Mono',monospace;">② 허용 시 중계</div>
+            <div style="width:50px;height:2px;background:var(--cyan);position:relative;">
+              <span style="position:absolute;right:-6px;top:-5px;color:var(--cyan);">▶</span>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div class="n-box n-internal">🗄️ 서버</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--text2);margin-top:8px;">
+          ※ TCP 연결의 <strong style="color:var(--cyan)">유효성(3-way handshake)</strong>은 검증, 패킷 내용은 미검사<br>
+          TCP 연결 완료 후 → 클라이언트와 서버 간 직접 패킷 릴레이
+        </div>
+      </div>
+
+      <div class="cls-desc">
+        <strong>세션 계층(L5)</strong>에서 동작하며, TCP 3-way handshake의 유효성을 검증한다.
+        TCP 연결이 성립되면 이후 패킷은 내용을 검사하지 않고 중계(Relay)한다.
+        대표적인 구현이 <strong>SOCKS 프록시</strong>다. 애플리케이션별 프록시 설정 없이
+        모든 TCP 연결에 대해 동작하는 것이 특징이다.
+      </div>
+      <div class="cls-row">
+        <div class="cls-pros">
+          <div class="cls-pros-title">✓ 장점</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>패킷 필터보다 향상된 보안</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>모든 TCP 앱에 적용 가능</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>상대적으로 빠른 처리</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>내부 IP 어느 정도 은닉</div>
+        </div>
+        <div class="cls-cons">
+          <div class="cls-cons-title">✗ 단점</div>
+          <div class="con-item"><span class="con-dot">✗</span>패킷 내용(페이로드) 미검사</div>
+          <div class="con-item"><span class="con-dot">✗</span>응용 계층 공격 차단 불가</div>
+          <div class="con-item"><span class="con-dot">✗</span>연결 수립 후 내용 무방비</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(6,182,212,.1);color:var(--cyan);">SOCKS v5</span>
+        <span class="cls-tag" style="background:rgba(6,182,212,.1);color:var(--cyan);">TCP 세션 검증</span>
+        <span class="cls-tag" style="background:rgba(6,182,212,.1);color:var(--cyan);">L5 세션 계층</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">내용 미검사</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 응용 레벨 -->
+  <div class="cls-card" id="b3" style="border-left-color:var(--c-al);">
+    <div class="cls-head">
+      <span class="cls-num" style="background:rgba(167,139,250,.1);color:var(--purple);">TYPE 03</span>
+      <span class="cls-icon">🔍</span>
+      <div class="cls-title-group">
+        <div class="cls-name-ko">응용 레벨 게이트웨이</div>
+        <div class="cls-name-en">Application Level Gateway (ALG / Proxy Firewall)</div>
+      </div>
+      <span class="cls-layer" style="background:rgba(167,139,250,.1);color:var(--purple);">L7 응용 계층</span>
+    </div>
+    <div class="cls-body">
+      <!-- 동작 다이어그램 -->
+      <div class="net-diagram" style="margin-bottom:14px;">
+        <div class="nd-title">▶ 응용 레벨 게이트웨이 — 두 개의 독립적 연결 구조</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px 0;">
+          <div style="text-align:center;">
+            <div class="n-box n-internet" style="margin-bottom:4px;">🖥️ 클라이언트</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="font-size:10px;color:var(--purple);font-family:'JetBrains Mono',monospace;text-align:center;">
+              연결 ①<br>(클라이언트↔프록시)
+            </div>
+            <div style="width:60px;height:2px;background:var(--purple);position:relative;">
+              <span style="position:absolute;right:-6px;top:-5px;color:var(--purple);">▶</span>
+            </div>
+          </div>
+          <div style="background:rgba(167,139,250,.15);border:2px solid var(--purple);border-radius:10px;
+            padding:14px;box-shadow:0 0 16px rgba(167,139,250,.2);text-align:center;">
+            <div style="font-size:20px;margin-bottom:4px;">🔍</div>
+            <div style="font-size:11px;font-weight:700;color:var(--purple);">응용 레벨<br>게이트웨이</div>
+            <div style="font-size:9px;color:var(--allow);margin-top:3px;">✓ L7 내용 완전 분석<br>✓ 사용자 인증</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="font-size:10px;color:var(--purple);font-family:'JetBrains Mono',monospace;text-align:center;">
+              연결 ②<br>(프록시↔서버)
+            </div>
+            <div style="width:60px;height:2px;background:var(--purple);position:relative;">
+              <span style="position:absolute;right:-6px;top:-5px;color:var(--purple);">▶</span>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div class="n-box n-internal">🗄️ 서버</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center;">
+          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+            border-radius:6px;padding:8px 12px;font-size:12px;color:var(--text3);flex:1;min-width:160px;">
+            <span style="color:var(--allow);font-weight:700;">✓ 검사 가능:</span><br>
+            HTTP URL·쿠키, FTP 명령, DNS 쿼리 내용, 악성코드 패턴, 사용자 인증
+          </div>
+          <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);
+            border-radius:6px;padding:8px 12px;font-size:12px;color:var(--text3);flex:1;min-width:160px;">
+            <span style="color:var(--deny);font-weight:700;">✗ 단점:</span><br>
+            각 프로토콜별 별도 프록시 필요, 처리 속도 느림, 새 프로토콜 지원 지연
+          </div>
+        </div>
+      </div>
+
+      <div class="cls-desc">
+        <strong>응용 계층(L7)</strong>까지 패킷 내용을 완전히 분석한다. 클라이언트와 서버 사이에 <strong>프록시(Proxy)</strong>로 위치하여 두 개의 별개 연결을 관리한다. HTTP·FTP·SMTP·DNS 등 <strong>프로토콜별로 전용 프록시</strong>가 필요하다. 가장 강력한 보안을 제공하지만 속도가 가장 느리다. 내부 IP를 완전히 은닉할 수 있다.
+      </div>
+      <div class="cls-row">
+        <div class="cls-pros">
+          <div class="cls-pros-title">✓ 장점</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>L7 내용까지 완전 검사</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>사용자 인증 가능</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>내부 IP 완전 은닉</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>강력한 로깅·감사</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>URL·콘텐츠 필터링</div>
+        </div>
+        <div class="cls-cons">
+          <div class="cls-cons-title">✗ 단점</div>
+          <div class="con-item"><span class="con-dot">✗</span>처리 속도 가장 느림</div>
+          <div class="con-item"><span class="con-dot">✗</span>서버 부하 높음</div>
+          <div class="con-item"><span class="con-dot">✗</span>프로토콜별 별도 프록시 필요</div>
+          <div class="con-item"><span class="con-dot">✗</span>새 프로토콜 즉시 지원 어려움</div>
+          <div class="con-item"><span class="con-dot">✗</span>구축·관리 비용 높음</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(167,139,250,.1);color:var(--purple);">Proxy Firewall</span>
+        <span class="cls-tag" style="background:rgba(167,139,250,.1);color:var(--purple);">ALG</span>
+        <span class="cls-tag" style="background:rgba(167,139,250,.1);color:var(--purple);">L7 완전 검사</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">보안 최고</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">속도 느림</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 혼합형 -->
+  <div class="cls-card" id="b4" style="border-left-color:var(--c-hyb);">
+    <div class="cls-head">
+      <span class="cls-num" style="background:rgba(236,72,153,.1);color:var(--pink);">TYPE 04</span>
+      <span class="cls-icon">🔀</span>
+      <div class="cls-title-group">
+        <div class="cls-name-ko">혼합형 게이트웨이</div>
+        <div class="cls-name-en">Hybrid Gateway</div>
+      </div>
+      <span class="cls-layer" style="background:rgba(236,72,153,.1);color:var(--pink);">L3~L7 복합</span>
+    </div>
+    <div class="cls-body">
+      <div class="net-diagram" style="margin-bottom:14px;">
+        <div class="nd-title">▶ 혼합형 — 트래픽 유형별 차별화 처리</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;padding:8px 0;justify-content:center;">
+          <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);
+            border-radius:8px;padding:12px 16px;text-align:center;min-width:140px;">
+            <div style="font-size:11px;font-weight:700;color:var(--fw);margin-bottom:6px;">패킷 필터 모듈</div>
+            <div style="font-size:11px;color:var(--text3);">고속 IP 트래픽<br>TCP/UDP 필터링</div>
+            <div style="margin-top:6px;font-size:10px;background:rgba(34,197,94,.1);
+              border-radius:4px;padding:2px 6px;color:var(--allow);">⚡ 빠름</div>
+          </div>
+          <div style="font-size:20px;color:var(--pink);display:flex;align-items:center;">+</div>
+          <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);
+            border-radius:8px;padding:12px 16px;text-align:center;min-width:140px;">
+            <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:6px;">응용 프록시 모듈</div>
+            <div style="font-size:11px;color:var(--text3);">HTTP·FTP·SMTP<br>L7 내용 검사</div>
+            <div style="margin-top:6px;font-size:10px;background:rgba(34,197,94,.1);
+              border-radius:4px;padding:2px 6px;color:var(--allow);">🔍 정밀</div>
+          </div>
+          <div style="font-size:20px;color:var(--pink);display:flex;align-items:center;">=</div>
+          <div style="background:rgba(236,72,153,.1);border:2px solid rgba(236,72,153,.35);
+            border-radius:8px;padding:12px 16px;text-align:center;min-width:140px;
+            box-shadow:0 0 14px rgba(236,72,153,.15);">
+            <div style="font-size:20px;margin-bottom:4px;">🔀</div>
+            <div style="font-size:11px;font-weight:700;color:var(--pink);">혼합형 방화벽</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:3px;">속도 + 보안 균형</div>
+          </div>
+        </div>
+      </div>
+      <div class="cls-desc">
+        <strong>패킷 필터링과 응용 프록시를 결합</strong>한 방식으로, 현대 방화벽 제품의 대부분이 이 방식을 채택한다. 일반적인 고속 트래픽은 패킷 필터링으로 빠르게 처리하고, HTTP·FTP·SMTP 등 중요 프로토콜은 응용 프록시 모듈에서 심층 검사한다. <strong>속도와 보안의 균형</strong>을 추구한 현실적 선택이다.
+      </div>
+      <div class="cls-row">
+        <div class="cls-pros">
+          <div class="cls-pros-title">✓ 장점</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>속도와 보안의 균형</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>트래픽 유형별 최적 처리</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>유연한 정책 설정</div>
+          <div class="pro-item"><span class="pro-dot">✓</span>현대 방화벽의 표준</div>
+        </div>
+        <div class="cls-cons">
+          <div class="cls-cons-title">✗ 단점</div>
+          <div class="con-item"><span class="con-dot">✗</span>구성 복잡도 높음</div>
+          <div class="con-item"><span class="con-dot">✗</span>설정 오류 시 보안 공백</div>
+          <div class="con-item"><span class="con-dot">✗</span>비용 높음</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(236,72,153,.1);color:var(--pink);">현대 방화벽 표준</span>
+        <span class="cls-tag" style="background:rgba(236,72,153,.1);color:var(--pink);">NGFW 포함</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">균형 최적</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ═══════════════════════════════════
+     PART 2. 구성 방법에 따른 분류
+═══════════════════════════════════ -->
+<div class="sec" id="config">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.4);">🏗️</div>
+    <div class="sec-meta">
+      <div class="sec-num">PART 02</div>
+      <h2>구성 방법에 따른 분류</h2>
+      <div class="sec-desc">방화벽·라우터·서버를 어떻게 배치하고 연결하는가</div>
+    </div>
+  </div>
+
+  <!-- ① 배스천 호스트 -->
+  <div class="cfg-card" id="c1" style="border-top:3px solid var(--c-ba);">
+    <div class="cfg-head">
+      <span class="cfg-num-badge" style="background:rgba(34,197,94,.1);color:var(--allow);">CONFIG 01</span>
+      <span class="cfg-icon">🏰</span>
+      <div>
+        <div class="cfg-title">배스천 호스트 (Bastion Host)</div>
+        <div class="cfg-en">가장 기본이 되는 방화벽 전용 시스템</div>
+      </div>
+    </div>
+    <div class="cfg-body">
+      <!-- 네트워크 다이어그램 -->
+      <div class="net-diagram">
+        <div class="nd-title">▶ 배스천 호스트 구성</div>
+        <div class="net">
+          <div class="n-box n-internet">🌍<br>인터넷</div>
+          <div class="n-arrow">→</div>
+          <div class="n-fw" style="width:56px;height:70px;">🏰<div class="n-fw-label">배스천<br>호스트</div></div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-internal">🏠<br>내부망</div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--text2);margin-top:10px;">
+          외부와 내부 사이에 <strong style="color:var(--allow)">단일 방화벽 시스템</strong> 배치<br>
+          모든 트래픽이 반드시 배스천 호스트를 통과
+        </div>
+      </div>
+      <div class="cfg-desc">
+        내부 네트워크와 외부 네트워크 사이에 <strong>단일 보안 강화 호스트(배스천 호스트)</strong>를 배치한다. "배스천(Bastion)"은 성벽의 요새를 의미하며, 불필요한 모든 서비스를 제거하고 보안을 극도로 강화한 시스템이다. 가장 단순한 구성이지만 단일 실패 지점(SPOF)이 존재한다.
+      </div>
+      <div class="cfg-feature-grid">
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">보안 수준</div>
+          <div class="cfg-feat-val" style="color:var(--gold);">중간</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">구성 복잡도</div>
+          <div class="cfg-feat-val" style="color:var(--allow);">낮음 (단순)</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">단일 실패점</div>
+          <div class="cfg-feat-val" style="color:var(--deny);">있음 ⚠️</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">비용</div>
+          <div class="cfg-feat-val" style="color:var(--allow);">저렴</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">단일 방화벽</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">보안 강화 시스템</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">SPOF 존재</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">가장 단순</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 스크린드 서브넷 -->
+  <div class="cfg-card" id="c2" style="border-top:3px solid var(--c-sc);">
+    <div class="cfg-head">
+      <span class="cfg-num-badge" style="background:rgba(245,158,11,.1);color:var(--amber);">CONFIG 02</span>
+      <span class="cfg-icon">🛡️</span>
+      <div>
+        <div class="cfg-title">스크린드 서브넷 (Screened Subnet)</div>
+        <div class="cfg-en">이중 방화벽 + DMZ — 가장 안전한 구성 ★★★</div>
+      </div>
+    </div>
+    <div class="cfg-body">
+      <div class="net-diagram">
+        <div class="nd-title">▶ 스크린드 서브넷 구성 (이중 방화벽 DMZ)</div>
+        <div class="net">
+          <div class="n-box n-internet">🌍<br>인터넷</div>
+          <div class="n-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div class="n-fw">🧱<div class="n-fw-label">외부 FW</div></div>
+            <div style="font-size:9px;color:var(--fw);font-family:'JetBrains Mono',monospace;">스크리닝 라우터</div>
+          </div>
+          <div class="n-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="background:rgba(245,158,11,.12);border:1px dashed rgba(245,158,11,.4);
+              border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:5px;">DMZ (서브넷)</div>
+              <div class="n-box n-dmz" style="margin-bottom:4px;min-width:70px;">🌐 웹서버</div>
+              <div class="n-box n-dmz" style="min-width:70px;">📧 메일서버</div>
+            </div>
+            <div style="font-size:9px;color:var(--amber);font-family:'JetBrains Mono',monospace;">배스천 호스트</div>
+          </div>
+          <div class="n-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div class="n-fw">🧱<div class="n-fw-label">내부 FW</div></div>
+            <div style="font-size:9px;color:var(--fw);font-family:'JetBrains Mono',monospace;">방화벽 라우터</div>
+          </div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-internal">🏠<br>내부망</div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+          <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);
+            border-radius:6px;padding:7px 12px;font-size:11.5px;color:var(--text3);">
+            <span style="color:var(--deny);font-weight:700;">차단:</span> 인터넷→내부망 직접 접근
+          </div>
+          <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);
+            border-radius:6px;padding:7px 12px;font-size:11.5px;color:var(--text3);">
+            <span style="color:var(--amber);font-weight:700;">허용:</span> 인터넷→DMZ (제한적)
+          </div>
+          <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);
+            border-radius:6px;padding:7px 12px;font-size:11.5px;color:var(--text3);">
+            <span style="color:var(--deny);font-weight:700;">차단:</span> DMZ→내부망 (원칙적)
+          </div>
+        </div>
+      </div>
+      <div class="cfg-desc">
+        <strong>이중 방화벽(외부·내부) 사이에 DMZ(비무장지대) 서브넷</strong>을 구성하는 방식으로, <span class="hg">보안성이 가장 높다</span>. 외부 방화벽은 인터넷으로부터 DMZ를 보호하고, 내부 방화벽은 DMZ로부터 내부망을 보호한다. 웹·메일·DNS 서버는 DMZ에 배치하여 침해 시 내부망으로의 확산을 방지한다.
+      </div>
+      <div class="cfg-feature-grid">
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">보안 수준</div>
+          <div class="cfg-feat-val" style="color:var(--allow);">최고 ★★★</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">구성 복잡도</div>
+          <div class="cfg-feat-val" style="color:var(--deny);">높음</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">단일 실패점</div>
+          <div class="cfg-feat-val" style="color:var(--allow);">없음 ✓</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">비용</div>
+          <div class="cfg-feat-val" style="color:var(--deny);">높음</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(245,158,11,.1);color:var(--amber);">이중 방화벽</span>
+        <span class="cls-tag" style="background:rgba(245,158,11,.1);color:var(--amber);">DMZ 구성</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">보안 최고</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">SPOF 없음</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">비용 높음</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 스크린드 호스트 -->
+  <div class="cfg-card" id="c3" style="border-top:3px solid var(--c-sh);">
+    <div class="cfg-head">
+      <span class="cfg-num-badge" style="background:rgba(59,130,246,.1);color:var(--blue);">CONFIG 03</span>
+      <span class="cfg-icon">🔑</span>
+      <div>
+        <div class="cfg-title">스크린드 호스트 게이트웨이 (Screened Host Gateway)</div>
+        <div class="cfg-en">스크리닝 라우터 + 배스천 호스트 조합</div>
+      </div>
+    </div>
+    <div class="cfg-body">
+      <div class="net-diagram">
+        <div class="nd-title">▶ 스크린드 호스트 구성</div>
+        <div class="net">
+          <div class="n-box n-internet">🌍<br>인터넷</div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-router" style="min-width:80px;">🔀<br>스크리닝<br>라우터</div>
+          <div class="n-arrow">→</div>
+          <div style="background:var(--bg3);border:1px solid var(--border2);
+            border-radius:8px;padding:10px;display:flex;flex-direction:column;
+            align-items:center;gap:6px;">
+            <div style="font-size:10px;color:var(--text2);font-family:'JetBrains Mono',monospace;">내부 네트워크</div>
+            <div class="n-box n-bastionhost" style="margin:0;min-width:80px;">🏰<br>배스천<br>호스트</div>
+            <div class="n-box n-internal" style="margin:0;min-width:80px;">🏠<br>내부망</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--text2);margin-top:10px;">
+          라우터가 1차 필터링 → 배스천 호스트가 2차 검사<br>
+          외부 접속은 <strong style="color:var(--blue)">반드시 배스천 호스트를 경유</strong>
+        </div>
+      </div>
+      <div class="cfg-desc">
+        <strong>스크리닝 라우터(패킷 필터)</strong>와 <strong>배스천 호스트(응용 프록시)</strong>를 조합한다. 스크리닝 라우터가 1차 필터링 후, 배스천 호스트가 응용 계층 검사를 수행한다. 외부에서 내부 접근 시 반드시 배스천 호스트를 경유해야 한다. DMZ가 없으므로 스크린드 서브넷보다 보안이 낮지만 구성이 단순하다.
+      </div>
+      <div class="cfg-feature-grid">
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">보안 수준</div>
+          <div class="cfg-feat-val" style="color:var(--gold);">중~높음</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">구성 복잡도</div>
+          <div class="cfg-feat-val" style="color:var(--gold);">중간</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">단일 실패점</div>
+          <div class="cfg-feat-val" style="color:var(--gold);">부분적</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">비용</div>
+          <div class="cfg-feat-val" style="color:var(--gold);">중간</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(59,130,246,.1);color:var(--blue);">라우터+배스천</span>
+        <span class="cls-tag" style="background:rgba(59,130,246,.1);color:var(--blue);">2단계 검사</span>
+        <span class="cls-tag" style="background:rgba(245,158,11,.1);color:var(--amber);">DMZ 없음</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 이중 홈 -->
+  <div class="cfg-card" id="c4" style="border-top:3px solid var(--c-ss);">
+    <div class="cfg-head">
+      <span class="cfg-num-badge" style="background:rgba(239,68,68,.1);color:var(--deny);">CONFIG 04</span>
+      <span class="cfg-icon">🏠</span>
+      <div>
+        <div class="cfg-title">이중 홈 게이트웨이 (Dual-Homed Gateway)</div>
+        <div class="cfg-en">두 개의 NIC를 가진 배스천 호스트가 네트워크 분리</div>
+      </div>
+    </div>
+    <div class="cfg-body">
+      <div class="net-diagram">
+        <div class="nd-title">▶ 이중 홈 게이트웨이 구성</div>
+        <div class="net">
+          <div class="n-box n-internet">🌍<br>인터넷</div>
+          <div class="n-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <div style="font-size:10px;color:var(--deny);font-family:'JetBrains Mono',monospace;margin-bottom:3px;">NIC 1 (외부)</div>
+            <div style="background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.4);
+              border-radius:10px;padding:14px;text-align:center;
+              box-shadow:0 0 14px rgba(239,68,68,.15);">
+              <div style="font-size:20px;margin-bottom:4px;">🏠</div>
+              <div style="font-size:11px;font-weight:700;color:var(--deny);">이중 홈<br>배스천 호스트</div>
+              <div style="font-size:9px;color:var(--text2);margin-top:3px;">IP 포워딩 비활성화</div>
+            </div>
+            <div style="font-size:10px;color:var(--allow);font-family:'JetBrains Mono',monospace;margin-top:3px;">NIC 2 (내부)</div>
+          </div>
+          <div class="n-arrow">→</div>
+          <div class="n-box n-internal">🏠<br>내부망</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center;">
+          <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);
+            border-radius:6px;padding:8px 12px;font-size:12px;color:var(--text3);">
+            ⚠️ <strong style="color:var(--deny)">라우터 없음</strong> — IP 포워딩 비활성화<br>
+            외부↔내부 직접 패킷 전달 <strong style="color:var(--deny)">불가</strong>
+          </div>
+          <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);
+            border-radius:6px;padding:8px 12px;font-size:12px;color:var(--text3);">
+            ✓ <strong style="color:var(--allow)">모든 통신</strong>은 배스천 호스트의 응용 프로세스를 통해서만
+          </div>
+        </div>
+      </div>
+      <div class="cfg-desc">
+        <strong>두 개의 NIC(네트워크 인터페이스 카드)</strong>를 가진 배스천 호스트가 외부망과 내부망을 물리적으로 분리한다. 핵심은 <strong>IP 포워딩(IP Forwarding)을 비활성화</strong>하는 것이다. 모든 통신은 반드시 배스천 호스트의 응용 프로세스를 통해서만 가능하다. 라우터 없이 두 네트워크를 강하게 분리한다.
+      </div>
+      <div class="cfg-feature-grid">
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">보안 수준</div>
+          <div class="cfg-feat-val" style="color:var(--allow);">높음</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">구성 복잡도</div>
+          <div class="cfg-feat-val" style="color:var(--gold);">중간</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">단일 실패점</div>
+          <div class="cfg-feat-val" style="color:var(--deny);">있음 ⚠️</div>
+        </div>
+        <div class="cfg-feat">
+          <div class="cfg-feat-label">IP 포워딩</div>
+          <div class="cfg-feat-val" style="color:var(--deny);">비활성화 ★</div>
+        </div>
+      </div>
+      <div class="cls-tags">
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">IP 포워딩 OFF</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">물리적 망분리</span>
+        <span class="cls-tag" style="background:rgba(239,68,68,.1);color:var(--deny);">NIC 2개</span>
+        <span class="cls-tag" style="background:rgba(34,197,94,.1);color:var(--allow);">강한 격리</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ═══════════════════════════════════
+     전체 비교표
+═══════════════════════════════════ -->
+<div class="sec" id="compare">
+  <div class="sec-head">
+    <div class="sec-icon" style="background:rgba(240,165,0,.1);border-color:rgba(240,165,0,.4);">📊</div>
+    <div class="sec-meta">
+      <div class="sec-num">COMPARISON</div>
+      <h2>전체 비교 요약</h2>
+      <div class="sec-desc">차단 방법 4종 + 구성 방법 4종 핵심 비교</div>
+    </div>
+  </div>
+
+  <div class="sub">차단 방법 비교</div>
+  <div class="tw"><table>
+    <thead><tr><th>유형</th><th>검사 계층</th><th>상태 추적</th><th>내용 검사</th><th>속도</th><th>보안</th><th>대표 구현</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="tk" style="color:var(--fw);">패킷 필터링</td>
+        <td>L3·L4</td><td class="tr">❌ Stateless</td><td class="tr">❌</td>
+        <td class="tg">최빠름 ★★★★★</td><td class="tr">낮음</td><td>라우터 ACL</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--cyan);">회선 레벨</td>
+        <td>L5 (세션)</td><td class="tg">✓ 제한적</td><td class="tr">❌</td>
+        <td class="tg">빠름 ★★★★</td><td class="ty">중간</td><td>SOCKS 프록시</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--purple);">응용 레벨</td>
+        <td>L7 (응용)</td><td class="tg">✓ 완전</td><td class="tg">✓ 완전</td>
+        <td class="tr">느림 ★★</td><td class="tg">최고 ★★★★★</td><td>ALG·WAF</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--pink);">혼합형</td>
+        <td>L3~L7 복합</td><td class="tg">✓</td><td class="tg">✓ 선택적</td>
+        <td class="ty">중간 ★★★</td><td class="tg">높음 ★★★★</td><td>현대 NGFW</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="sub" style="margin-top:28px;">구성 방법 비교</div>
+  <div class="tw"><table>
+    <thead><tr><th>유형</th><th>구성 요소</th><th>DMZ</th><th>SPOF</th><th>보안</th><th>비용</th><th>핵심 특징</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="tk" style="color:var(--allow);">배스천 호스트</td>
+        <td>방화벽 1대</td><td class="tr">없음</td><td class="tr">있음</td>
+        <td class="ty">중간</td><td class="tg">저렴</td>
+        <td>가장 단순</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--amber);">스크린드 서브넷</td>
+        <td>방화벽 2대 + DMZ</td><td class="tg">있음 ★</td><td class="tg">없음</td>
+        <td class="tg">최고 ★★★</td><td class="tr">높음</td>
+        <td><strong>이중 방화벽 + DMZ</strong></td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--blue);">스크린드 호스트</td>
+        <td>라우터 + 배스천</td><td class="tr">없음</td><td class="ty">부분적</td>
+        <td class="ty">중~높음</td><td class="ty">중간</td>
+        <td>2단계 필터링</td>
+      </tr>
+      <tr>
+        <td class="tk" style="color:var(--deny);">이중 홈 게이트웨이</td>
+        <td>NIC 2개 배스천</td><td class="tr">없음</td><td class="tr">있음</td>
+        <td class="tg">높음</td><td class="ty">중간</td>
+        <td><strong>IP 포워딩 비활성화</strong></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <!-- 최종 요약 박스 -->
+  <div class="box bx-y" style="margin-top:20px;">
+    <div class="bt">💡 시험 핵심 포인트 정리</div>
+    <strong>차단 방법 속도 순서</strong>: 패킷 필터링 &gt; 회선 레벨 &gt; 혼합형 &gt; 응용 레벨 (느림)<br>
+    <strong>차단 방법 보안 순서</strong>: 응용 레벨 &gt; 혼합형 &gt; 회선 레벨 &gt; 패킷 필터링 (낮음)<br><br>
+    <strong>구성 방법 보안 순서</strong>: 스크린드 서브넷 &gt; 이중 홈 = 스크린드 호스트 &gt; 배스천 호스트<br>
+    <strong>보안 최고 구성</strong>: <span class="ho">스크린드 서브넷</span> (이중 방화벽 + DMZ)<br>
+    <strong>이중 홈 핵심</strong>: NIC 2개 + <span class="hr">IP 포워딩 비활성화</span><br>
+    <strong>회선 레벨 대표</strong>: <span class="hc">SOCKS 프록시</span>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- QUIZ -->
+<div class="quiz-wrap" id="quiz">
+  <div class="quiz-header">
+    <div class="quiz-badge">📝 기출 유형</div>
+    <div class="quiz-title">확인 문제 — 방화벽 분류</div>
+  </div>
+
+  <div class="q-item">
+    <div class="q-num">Q1 · 군무원 / 9급 공무원 유형</div>
+    <div class="q-text">침입 차단 시스템(방화벽)의 차단 방법에 따른 분류 중, 가장 빠른 처리 속도를 가지지만 IP 스푸핑에 취약하고 연결 상태를 추적하지 않는 방식은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">①</span>패킷 필터링 게이트웨이</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>회선 레벨 게이트웨이</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">③</span>응용 레벨 게이트웨이</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>혼합형 게이트웨이</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ①</div>
+      <strong>패킷 필터링 게이트웨이</strong>는 L3·L4 헤더(IP·포트·프로토콜)만 검사하는 Stateless 방식이다. 처리 속도가 가장 빠르지만, 연결 상태를 추적하지 않아 IP 스푸핑·단편화 공격에 취약하고 패킷 내용은 검사하지 못한다.
+    </div>
+  </div>
+
+  <div class="q-item">
+    <div class="q-num">Q2 · 정보보호 기사 / 군무원 유형</div>
+    <div class="q-text">방화벽의 구성 방법 중 <strong>이중 방화벽과 DMZ(비무장지대)를 구성</strong>하여 보안성이 가장 높은 방식은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>배스천 호스트 (Bastion Host)</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">②</span>스크린드 서브넷 (Screened Subnet)</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">③</span>스크린드 호스트 게이트웨이 (Screened Host Gateway)</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>이중 홈 게이트웨이 (Dual-Homed Gateway)</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ②</div>
+      <strong>스크린드 서브넷</strong>은 외부 방화벽→DMZ→내부 방화벽의 이중 방화벽 구조로 가장 높은 보안을 제공한다. DMZ에 공개 서버를 배치하여 서버 침해 시 내부망 확산을 방지한다. 단일 실패점(SPOF)이 없는 유일한 구성이다.
+    </div>
+  </div>
+
+  <div class="q-item">
+    <div class="q-num">Q3 · 군무원 기출 유형</div>
+    <div class="q-text">이중 홈 게이트웨이(Dual-Homed Gateway)에 대한 설명으로 <strong>옳은</strong> 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>두 대의 독립된 방화벽 사이에 DMZ를 구성하는 방식이다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>스크리닝 라우터와 배스천 호스트를 조합한 구성이다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>두 개의 네트워크 인터페이스를 가진 배스천 호스트에서 IP 포워딩을 비활성화하여 내외부 망을 분리한다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>단일 라우터에 패킷 필터링 기능을 추가한 가장 단순한 구성이다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      <strong>이중 홈 게이트웨이</strong>의 핵심: NIC 2개(외부·내부 각각) + <strong>IP 포워딩(IP Forwarding) 비활성화</strong>. IP 포워딩을 끄면 패킷이 두 NIC 사이를 직접 통과할 수 없어 모든 통신이 반드시 배스천 호스트의 응용 프로세스를 통해야 한다.
+    </div>
+  </div>
+
+  <div class="q-item">
+    <div class="q-num">Q4 · 군무원 / 공무원 유형</div>
+    <div class="q-text">방화벽 차단 방법 중 <strong>회선 레벨 게이트웨이(Circuit Level Gateway)</strong>의 특징으로 옳은 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>IP 주소와 포트 번호만 검사하는 Stateless 방식이다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>응용 계층까지 패킷 내용을 완전히 분석하는 가장 안전한 방식이다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>TCP 3-way handshake의 유효성을 검증하며, SOCKS 프록시가 대표적 구현이다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>패킷 필터링과 응용 프록시를 결합한 현대 방화벽의 주류 방식이다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      <strong>회선 레벨 게이트웨이</strong>는 세션 계층(L5)에서 TCP 3-way handshake의 유효성을 검증한다. TCP 연결이 성립된 후에는 패킷 내용을 검사하지 않고 릴레이한다. 대표 구현이 <strong>SOCKS 프록시(v5)</strong>이다.
+    </div>
+  </div>
+
+  <div class="q-item">
+    <div class="q-num">Q5 · 종합 유형</div>
+    <div class="q-text">다음 중 방화벽 분류에 대한 설명이 <strong>옳지 않은</strong> 것은?</div>
+    <div class="q-options">
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">①</span>응용 레벨 게이트웨이는 패킷 내용을 검사할 수 있어 보안이 가장 높지만 처리 속도가 느리다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">②</span>스크린드 서브넷은 단일 실패점(SPOF)이 없고 보안성이 가장 높은 구성이다.</div>
+      <div class="q-opt" onclick="answer(this,'correct')"><span class="opt-letter">③</span>배스천 호스트 구성은 이중 방화벽을 사용하므로 단일 실패점이 발생하지 않는다.</div>
+      <div class="q-opt" onclick="answer(this,'wrong')"><span class="opt-letter">④</span>패킷 필터링 게이트웨이는 처리 속도가 가장 빠르지만 IP 스푸핑에 취약하다.</div>
+    </div>
+    <button class="q-btn" onclick="showExplain(this)">해설 보기</button>
+    <div class="q-explain">
+      <div class="ex-title">✅ 정답: ③</div>
+      <strong>배스천 호스트</strong>는 단일 방화벽 시스템 하나로 구성되므로 <strong>단일 실패점(SPOF)이 존재</strong>한다. 이중 방화벽을 사용하는 구성은 스크린드 서브넷(Screened Subnet)이다. 배스천 호스트는 가장 단순하고 저렴하지만 SPOF가 단점이다.
+    </div>
+  </div>
+</div>
+
+<div style="height:64px;"></div>
+</div>
+
+<button class="stb" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function answer(el, type) {
+  const opts = el.closest('.q-options').querySelectorAll('.q-opt');
+  opts.forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+  if(type === 'correct') {
+    el.classList.add('correct');
+    el.querySelector('.opt-letter').textContent = '✓';
+  } else {
+    el.classList.add('wrong');
+    el.querySelector('.opt-letter').textContent = '✗';
+  }
+  const btn = el.closest('.q-item').querySelector('.q-btn');
+  if(btn) btn.disabled = false;
+}
+function showExplain(btn) {
+  const ex = btn.nextElementSibling;
+  ex.classList.toggle('show');
+  btn.textContent = ex.classList.contains('show') ? '해설 닫기' : '해설 보기';
+}
+</script>
+</body>
+</html>
